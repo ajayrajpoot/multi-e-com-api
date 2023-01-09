@@ -1,8 +1,8 @@
 const ProductItem = require('../models/productItem')
 
-const getproductItem = async (productItemId) => {
-    if (productItemId) {
-        return await ProductItem.find({ _id: productItemId });
+const getproductItem = async (productId) => {
+    if (productId) {
+        return await ProductItem.find({ productId: productId });
     }
     else
         return await ProductItem.find();
@@ -10,6 +10,7 @@ const getproductItem = async (productItemId) => {
 
 const addproductItem = async (body) => {
     try {
+        console.log("body---------->", body)
 
         let params = {
             productId: body.productId,
@@ -24,12 +25,14 @@ const addproductItem = async (body) => {
             discount: body.discount,
             tax: body.tax,
             offer: body.offer,
-            description: body.description,
-            productImage1: body.productImage1,
-            productImage2: body.productImage2,
-            productImage3: body.productImage3,
-            productImage4: body.productImage4,
+            description: body.description
         }
+        
+        if(body.productImage1) { params.productImage1 = body.productImage1; }
+        if(body.productImage2) { params.productImage2 = body.productImage2; }
+        if(body.productImage3) { params.productImage3 = body.productImage3; }
+        if(body.productImage4) { params.productImage4 = body.productImage4; }
+
         const productItem = new ProductItem(params);
         const result = await productItem.save();
         return result;
@@ -55,11 +58,11 @@ const updateproductItem = async (id, body) => {
             tax: body.tax,
             offer: body.offer,
             description: body.description,
-            productImage1: body.productImage1,
-            productImage2: body.productImage2,
-            productImage3: body.productImage3,
-            productImage4: body.productImage4,
         }
+        if(body.productImage1) { params.productImage1 = body.productImage1; }
+        if(body.productImage2) { params.productImage2 = body.productImage2; }
+        if(body.productImage3) { params.productImage3 = body.productImage3; }
+        if(body.productImage4) { params.productImage4 = body.productImage4; }
 
         console.log('params', params)
 

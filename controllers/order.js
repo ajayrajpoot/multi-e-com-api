@@ -4,9 +4,7 @@ const OrderItem = require('../models/orderItem');
 const OrderBuyers = require('../models/orderBuyers');
 const OrderBilling = require('../models/orderBilling');
 const BuyerAddress = require('../models/buyerAddress');
-
-// const mongoose = require('mongoose');
-// const ObjectId = mongoose.Types.ObjectId;
+const Activity = require('../models/activity');
 
 const getOrder = async (buyerId) => {
     // console.log(">>>>>", mongoose.Types.ObjectId(buyerId))
@@ -23,6 +21,16 @@ const getOrder = async (buyerId) => {
                     as: "orderItem"
                 }
             },
+            // {
+            //     $lookup: {
+            //         from: "products",
+            //         foreignField: "_id",
+            //         localField: "orderItem.$.orderItem",
+            //         as: "product"
+            //     }
+            // },
+
+
             {
                 $lookup: {
                     from: "orderbillings",
@@ -51,17 +59,26 @@ const addOrder = async (body) => {
 
     try {
 
+        console.log("body-->", body)
         let orderId = +new Date();
 
         const cart = await Cart.aggregate(
             [
-                { $match: { buyerId: body.buyer_id } },
+                { $match: { buyerId: body.buyerId } },
                 {
                     $lookup: {
                         from: "productitems",
                         foreignField: "_id",
                         localField: "product_item_id",
                         as: "orderItem"
+                    }
+                },
+                {
+                    $lookup: {
+                        from: "products",
+                        foreignField: "_id",
+                        localField: "productId",
+                        as: "product"
                     }
                 }
 
@@ -89,7 +106,7 @@ const addOrder = async (body) => {
 
         const orderItem = [];
         cart.map(data => {
-            // console.log("orderItem-->", data)
+            console.log("orderItem-->", data)
 
             if (data.orderItem.length) {
                 // console.log("data.orderItem-->", data.orderItem)
@@ -104,6 +121,7 @@ const addOrder = async (body) => {
 
                 data.orderItem[0].order_id = orderId;
                 data.orderItem[0].productItemId = data.orderItem[0]._id;
+                data.orderItem[0].product = data.product;
 
                 delete data.orderItem[0]._id;
                 orderItem.push(data.orderItem[0]);
@@ -190,14 +208,29 @@ const addOrder = async (body) => {
         const orderBuyer = new OrderBuyers(addressObj);
         const orderBuyerRes = await orderBuyer.save();
 
-        return { result, orderId, orderObj, orderItem, billingObj, orderBuyerRes };
+        let dCart = await Cart.deleteMany({ buyerId: body.buyerId });
+
+        return { result, orderId, orderObj, orderItem, billingObj, orderBuyerRes, dCart };
+
     } catch (error) {
 
-        console.log("error", error.message || error)
+        console.log("error", error.message || error);
         throw error;
+
     }
 }
+const updateOrderStatus = async (params) => {
+    let obj = {};
+    if (params.state) {
+        obj.state = params.state;
+    }
+    if (params.payment_status) {
+        obj.payment_status = params.payment_status;
+    }
+    const result = await Order.update({ order_id: params.order_id }, obj);
 
+}
+ 
 const updateOrder = async (body) => {
     try {
         const params = JSON.parse(JSON.stringify(body));
@@ -209,20 +242,6 @@ const updateOrder = async (body) => {
     } catch (error) {
         throw error;
     }
-}
+} 
 
-const deleteOrder = async (orderId) => {
-    try {
-        const resultOrder = await Order.deleteOne({ order_id: orderId });
-        const resultOrderItem = await OrderItem.deleteOne({ order_id: orderId });
-        const resultOrderBilling = await OrderBilling.deleteOne({ order_id: orderId });
-        const resultOrderBuyer = await OrderBuyer.deleteOne({ order_id: orderId });
-
-        console.log("delete result")
-        return { resultOrder, resultOrderItem, resultOrderBilling, resultOrderBuyer };
-    } catch (error) {
-        throw error;
-    }
-}
-
-module.exports = { getOrder, addOrder, updateOrder, deleteOrder }
+module.exports = { getOrder, addOrder, updateOrder, updateOrderStatus }

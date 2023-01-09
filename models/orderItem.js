@@ -20,6 +20,7 @@ const orderItemSchema = new schema({
     offer: { type: Boolean },
     description: { type: String },
     productImage: [{ type: String }],
+    product:{type: Object}
 
 });
 module.exports = mongoose.model('orderItem', orderItemSchema);

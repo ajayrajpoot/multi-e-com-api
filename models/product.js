@@ -16,7 +16,7 @@ const productSchema = new schema({
     rating: { type: String },
     ratingCount: { type: String },
     buyerGuarantee: { type: String },
-    sponsored: { type: String },
+    sponsored: { type: Boolean },
     likes: { type: String },
     dislikes: { type: String },
     active: { type: Boolean },

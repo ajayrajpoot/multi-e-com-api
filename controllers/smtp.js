@@ -11,10 +11,23 @@ const getSmtp = async (shopId) => {
 const addSmtp = async (body) => {
     try {
 
+        let p = {
+            smtpServer: body.smtpServer,
+            smtpPort: body.smtpPort,
+            userName: body.userName,
+            password: body.password,
+            isSsl: body.isSsl,
+            shopId: body.shopId,
+            active: body.active,
+          }
+        console.log("body", body)
         const smtp = new Smtp(body);
         const result = await smtp.save();
+        console.log("result", result)
         return result;
     } catch (error) {
+        console.log("result", error)
+
         throw error;
     }
 }

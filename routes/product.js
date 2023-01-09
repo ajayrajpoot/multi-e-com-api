@@ -46,7 +46,7 @@ router.post('/addproduct', uploadFile, async (req, res, next) => {
         
         let ffileName = '';
         
-        if (req.files['iconImage'][0]?.originalname) {
+        if (req.files && req.files['iconImage'] && req.files['iconImage'][0]?.originalname) {
 
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['iconImage'][0].originalname).name;
@@ -75,7 +75,7 @@ router.post('/updateproduct/:id', uploadFile, async (req, res, next) => {
     try {
         let ffileName = '';
         
-        if (req.files['iconImage'][0]?.originalname) {
+        if (req.files && req.files['iconImage'] && req.files['iconImage'][0]?.originalname) {
 
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['iconImage'][0].originalname).name;

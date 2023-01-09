@@ -40,7 +40,7 @@ router.get('/getCategory', async (req, res, next) => {
 
 router.post('/addCategory', uploadFile, async (req, res, next) => {
     try {
-        if (req.files) {
+        if (req.files && req.files['iconImage'] && req.files['iconImage'][0]) {
 
             console.log("body", req.body)
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
@@ -51,7 +51,6 @@ router.post('/addCategory', uploadFile, async (req, res, next) => {
 
             const contentType = req.files['iconImage'][0].mimetype;
             const fileContent = fs.readFileSync(req.files['iconImage'][0].path);
-            // S3ClassObj.s3Upload(s3path, fileContent, contentType);   
             let d = fs.writeFileSync(lPath, fileContent);
 
             req.body.iconImage = ffileName;

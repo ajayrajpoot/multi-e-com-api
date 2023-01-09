@@ -34,7 +34,7 @@ const uploadFile = multer({
 
 router.use('/getproductItem', async (req, res, next) => {
     try {
-        const result = await ProductItem.getproductItem(req.query.id);
+        const result = await ProductItem.getproductItem(req.query.productId);
         res.json({ result: true, message: "", data: result });
     } catch (error) {
         next(error);
@@ -56,27 +56,27 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
         let productImage3 = '';
         let productImage4 = '';
 
-        if (req.files['productImage1'][0]?.originalname) {
+        if (req.files['productImage1']) {
 
             const extName = path.extname(req.files['productImage1'][0].originalname).toLowerCase();
+            console.log(extName)
             let fileName = path.parse(req.files['productImage1'][0].originalname).name;
+            console.log(fileName)
 
-            let productImage1 = fileName + '_' + (+new Date()) + extName;
+            productImage1 = fileName + '_' + (+new Date()) + extName;
             let lPath = `./public/upload/${productImage1}`;
-
-            const contentType = req.files['productImage1'][0].mimetype;
             const fileContent = fs.readFileSync(req.files['productImage1'][0].path);
             let d = fs.writeFileSync(lPath, fileContent);
 
         }
         //product 2
 
-        if (req.files['productImage2'][0]?.originalname) {
+        if (req.files['productImage2']) {
 
             const extName = path.extname(req.files['productImage2'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage2'][0].originalname).name;
 
-            let productImage2 = fileName + '_' + (+new Date()) + extName;
+            productImage2 = fileName + '_' + (+new Date()) + extName;
             let lPath = `./public/upload/${productImage2}`;
 
             const contentType = req.files['productImage2'][0].mimetype;
@@ -85,12 +85,12 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
 
         }
 
-        if (req.files['productImage3'][0]?.originalname) {
+        if (req.files['productImage3']) {
 
             const extName = path.extname(req.files['productImage3'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage3'][0].originalname).name;
 
-            let productImage3 = fileName + '_' + (+new Date()) + extName;
+            productImage3 = fileName + '_' + (+new Date()) + extName;
             let lPath = `./public/upload/${productImage3}`;
 
             const contentType = req.files['productImage3'][0].mimetype;
@@ -99,12 +99,12 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
 
         }
 
-        if (req.files['productImage4'][0]?.originalname) {
+        if (req.files['productImage4']) {
 
             const extName = path.extname(req.files['productImage4'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage4'][0].originalname).name;
 
-            let productImage4 = fileName + '_' + (+new Date()) + extName;
+            productImage4 = fileName + '_' + (+new Date()) + extName;
             let lPath = `./public/upload/${productImage4}`;
 
             const contentType = req.files['productImage4'][0].mimetype;
@@ -124,6 +124,7 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
         if (productImage4)
             req.body.productImage4 =  (productImage4);
 
+ 
 
         const result = await ProductItem.addproductItem(req.body);
 
@@ -139,7 +140,7 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
 router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
     try {
 
-        
+         
         console.log("req------------>", req.files)
         console.log("productImage1:", req.files['productImage1'])
         console.log("productImage2:", req.files['productImage2'] )
@@ -160,11 +161,7 @@ router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
             console.log(fileName)
 
             productImage1 = fileName + '_' + (+new Date()) + extName;
-            console.log('---->',productImage1)
             let lPath = `./public/upload/${productImage1}`;
-            console.log(lPath)
-
-            const contentType = req.files['productImage1'][0].mimetype;
             const fileContent = fs.readFileSync(req.files['productImage1'][0].path);
             let d = fs.writeFileSync(lPath, fileContent);
 

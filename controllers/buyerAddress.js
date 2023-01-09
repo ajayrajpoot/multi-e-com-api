@@ -10,10 +10,25 @@ const getBuyerAddress = async (typeId) => {
 
 const addBuyerAddress = async (body) => {
     try {
-        const buyer = new BuyerAddress(body);
+        console.log("body:", body)
+        let p =  {
+                buyer_id: body.buyer_id,
+                name: body.name,
+                address1: body.address1,
+                address2: body.address2,
+                landmark: body.landmark,
+                city: body.city,
+                state: body.state,
+                country: body.country,
+                zip: body.zip,
+                active: body.active?true:false,
+            }
+        const buyer = new BuyerAddress(p);
         const result = await buyer.save();
+        console.log("result", result)
         return result;
     } catch (error) {
+        console.log("error", error)
         throw error;
     }
 }

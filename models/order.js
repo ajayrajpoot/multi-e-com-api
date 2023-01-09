@@ -20,7 +20,8 @@ const orderSchema = new schema({
     total_price: { type: String },
     prduct_detail: { type: String },
     Seller_Comment: { type: String },
-    status: { type: String },
+    status: { type: String, enum: ['PROCESSING', 'BOOKED',"IN TRANSIT","ONHOLD", "DELIVERED","CANCELED", "RTO", "FAILED", "REFUNDED"] },
+    payment_status: { type: String, enum: [ "PENDING","PROCESSING", "COMPLEAT",  "REFUNDED",] },
     buyer_id: { type: String },
     payment_detail: { type: String },
     payment_recipte: { type: String },
@@ -40,6 +41,9 @@ const orderSchema = new schema({
     unit: { type: String },
     request_data: { type: String },
     create: { type: Date, required: true, default: Date.now },
-    update: { type: Date },
-});
+    update: { type: Date, required: true, default: Date.now  },
+} ,{
+    // Make Mongoose use Unix time (seconds since Jan 1, 1970)
+    update: { currentTime: () =>  Date.now()   }
+  });
 module.exports = mongoose.model('order', orderSchema);
