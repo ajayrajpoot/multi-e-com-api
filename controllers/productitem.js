@@ -1,11 +1,7 @@
 const ProductItem = require('../models/productItem')
 
-const getproductItem = async (productId) => {
-    if (productId) {
-        return await ProductItem.find({ productId: productId });
-    }
-    else
-        return await ProductItem.find();
+const getproductItem = async (filter) => {
+    return await ProductItem.getProductItem(filter);
 }
 
 const addproductItem = async (body) => {
@@ -13,28 +9,26 @@ const addproductItem = async (body) => {
         console.log("body---------->", body)
 
         let params = {
-            productId: body.productId,
+            product_id: body.product_id,
             sku: body.sku,
             size: body.size,
             color: body.color,
             stock: body.stock,
             price: body.price,
-            isPriceIncludingDiscount: body.isPriceIncludingDiscount ? true : false,
-            isPriceIncludingTax: body.isPriceIncludingTax ? true : false,
-            isDiscount: body.isDiscount,
+
             discount: body.discount,
             tax: body.tax,
             offer: body.offer,
             description: body.description
         }
-        
-        if(body.productImage1) { params.productImage1 = body.productImage1; }
-        if(body.productImage2) { params.productImage2 = body.productImage2; }
-        if(body.productImage3) { params.productImage3 = body.productImage3; }
-        if(body.productImage4) { params.productImage4 = body.productImage4; }
 
-        const productItem = new ProductItem(params);
-        const result = await productItem.save();
+        if (body.productImage1) { params.image1 = body.productImage1; }
+        if (body.productImage2) { params.image2 = body.productImage2; }
+        if (body.productImage3) { params.image3 = body.productImage3; }
+        if (body.productImage4) { params.image4 = body.productImage4; }
+
+        const result = await ProductItem.addProductItem(params);
+        // const result = await productItem.save();
         return result;
     } catch (error) {
         throw error;
@@ -45,28 +39,26 @@ const updateproductItem = async (id, body) => {
     try {
 
         let params = {
-            productId: body.productId,
+            product_id: body.product_id,
             sku: body.sku,
             size: body.size,
             color: body.color,
             stock: body.stock,
             price: body.price,
-            isPriceIncludingDiscount: body.isPriceIncludingDiscount ? true : false,
-            isPriceIncludingTax: body.isPriceIncludingTax ? true : false,
-            isDiscount: body.isDiscount,
+
             discount: body.discount,
             tax: body.tax,
             offer: body.offer,
             description: body.description,
         }
-        if(body.productImage1) { params.productImage1 = body.productImage1; }
-        if(body.productImage2) { params.productImage2 = body.productImage2; }
-        if(body.productImage3) { params.productImage3 = body.productImage3; }
-        if(body.productImage4) { params.productImage4 = body.productImage4; }
+        if (body.productImage1) { params.image1 = body.productImage1; }
+        if (body.productImage2) { params.image2 = body.productImage2; }
+        if (body.productImage3) { params.image3 = body.productImage3; }
+        if (body.productImage4) { params.image4 = body.productImage4; }
 
         console.log('params', params)
 
-        const result = await ProductItem.update({ _id: id }, params);
+        const result = await ProductItem.updateProductItem(id, params);
 
         console.log("update result", result)
         return result;

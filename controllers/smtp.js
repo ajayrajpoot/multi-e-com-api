@@ -1,11 +1,7 @@
 const Smtp = require('../models/smtp')
 
 const getSmtp = async (shopId) => {
-    if (shopId) {
-        return await Smtp.find({ shopId: shopId });
-    }
-    else
-        return await Smtp.find();
+    return await Smtp.getSmtp(shopId);
 }
 
 const addSmtp = async (body) => {
@@ -19,10 +15,10 @@ const addSmtp = async (body) => {
             isSsl: body.isSsl,
             shopId: body.shopId,
             active: body.active,
-          }
-        console.log("body", body)
-        const smtp = new Smtp(body);
-        const result = await smtp.save();
+        }
+        console.log("body ", body)
+        const result = await Smtp.addSmtp(p);
+        //const result = await smtp.save();
         console.log("result", result)
         return result;
     } catch (error) {
@@ -48,7 +44,7 @@ const updateSmtp = async (body, id) => {
 
         // JSON.parse(JSON.stringify(body));
 
-        const result = await Smtp.update({ _id: id }, params);
+        const result = await Smtp.updateSmtp(id, params);
 
         console.log("update result", result)
         return result;

@@ -1,24 +1,24 @@
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const OrderBillingSchema = new schema({
-    buyer_id: { type: schema.Types.ObjectId },
-    order_id: { type: String, required: true },
 
-    total_price: { type: String },
-    total_discount: { type: String },
-    total_shipping: { type: String },
-    total_tax: { type: String },
+const getOrderBilling = async (orderId) => {
+    let result = await readDB.query(`SELECT * FROM order_billing Where order_id = ?  `, [orderId]);
+    return result;
+};
 
-    status: { type: String },
-    comment: { type: String },
-    note: { type: String },
+const addOrderBilling = async (params) => {
+    const result = await writeDB.query(`INSERT INTO order_billing SET ?   `, params);
+    return result;
+}
 
-    payment_option: { type: String },
-    payment_note: { type: String },
-    payment_type: { type: String },
+const updateOrderBilling = async (id, params) => {
+    const result = await writeDB.query(`UPDATE order_billing SET   ? where id= ? `, params, id);
+    return result;
+}
 
-    create: { type: Date, required: true, default: Date.now },
-    update: { type: Date },
-});
-module.exports = mongoose.model('orderBilling', OrderBillingSchema);
+const deleteOrderBilling = async (id) => {
+    const result = await writeDB.query(`DELETE FROM order_billing WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getOrderBilling, addOrderBilling, updateOrderBilling, deleteOrderBilling }

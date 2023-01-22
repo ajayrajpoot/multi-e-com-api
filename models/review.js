@@ -1,21 +1,24 @@
 
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const reviewSchema = new schema({
+const getReview = async () => {
+    let result = await readDB.query(`SELECT * FROM review  `);
+    return result;
+};
 
-    image: { type: String },
-    name: { type: String },
-    comment: { type: String },
-    rating: { type: String },
-    type: { type: String },
-    shop_or_product_id: { type: String },
-    time: { type: String },
-    buyer_id: { type: String },
-    likes: { type: String },
-    dislikes: { type: String },
-    create: { type: Date, required: true, default: Date.now },
-    update: { type: Date },
+const addReview = async (params) => {
+    const result = await writeDB.query(`INSERT INTO review SET ?   `, params);
+    return result;
+}
 
-});
-module.exports = mongoose.model('review', reviewSchema);
+const updateReview = async (id, params) => {
+    const result = await writeDB.query(`UPDATE review SET   ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteReview = async (id) => {
+    const result = await writeDB.query(`DELETE FROM review WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getReview, addReview, updateReview, deleteReview }

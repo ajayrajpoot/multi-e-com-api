@@ -4,17 +4,28 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 
 const getBuyer = async (typeId) => {
-    if (typeId) {
-        return await Buyer.find();
-    }
-    else
-        return await Buyer.find();
+    return await Buyer.getBuyer();
 }
 
 const addBuyer = async (body) => {
     try {
-        const buyer = new Buyer(body);
-        const result = await buyer.save();
+        
+        let par = {
+            name: body.name,
+            last_name: body.last_name,
+            email: body.email,
+            phone: body.phone,
+            password: body.password,
+            address1: body.address1,
+            address2: body.address2,
+            city: body.city,
+            state: body.state,
+            country: body.country,
+            zip: body.zip,
+            active: body.active ? 1 : 0,
+        }
+        const result = await Buyer.addBuyer(par);
+        // const result = await buyer.save();
         return result;
     } catch (error) {
         throw error;
@@ -23,8 +34,22 @@ const addBuyer = async (body) => {
 
 const updateBuyer = async (body, id) => {
     try {
-        const result = await Buyer.update({ _id: id }, body);
-        console.log("update result", result);
+        let par = {
+            name: body.name,
+            last_name: body.last_name,
+            email: body.email,
+            phone: body.phone,
+            password: body.password,
+            address1: body.address1,
+            address2: body.address2,
+            city: body.city,
+            state: body.state,
+            country: body.country,
+            zip: body.zip,
+            active: body.active ? 1 : 0,
+        }
+        const result = await Buyer.updateBuyer(id, par);
+        console.log("update result", body, result);
         return result;
     } catch (error) {
         throw error;

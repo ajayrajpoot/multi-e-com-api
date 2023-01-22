@@ -1,26 +1,24 @@
 
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const orderItemSchema = new schema({
+const getOrderItem = async () => {
+    let result = await readDB.query(`SELECT * FROM order_item  `);
+    return result;
+};
 
-    order_id: { type: String, required: true },
-    
-    productId: { type: schema.Types.ObjectId },
-    sku: { type: String },
-    size: [{ type: String }],
-    color: [{ type: String }],
-    stock: [{ type: String }],
-    price: { type: String },
-    isPriceIncludingDiscount: { type: Boolean },
-    isPriceIncludingTax: { type: Boolean },
-    isDiscount: { type: String },
-    discount: { type: String },
-    tax: { type: String },
-    offer: { type: Boolean },
-    description: { type: String },
-    productImage: [{ type: String }],
-    product:{type: Object}
+const addOrderItem = async (params) => { 
+        const result = await writeDB.query(`INSERT INTO order_item SET ? `, params);
+        return result; 
+}
 
-});
-module.exports = mongoose.model('orderItem', orderItemSchema);
+const updateOrderItem = async (id, params) => {
+    const result = await writeDB.query(`UPDATE order_item SET ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteOrderItem = async (id) => {
+    const result = await writeDB.query(`DELETE FROM order_item WHERE id = ? `, id);
+    return result;
+};
+
+
+module.exports = { getOrderItem, addOrderItem, updateOrderItem, deleteOrderItem }

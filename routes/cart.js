@@ -5,7 +5,7 @@ const Cart = require('../controllers/cart.js');
 
 router.use('/getcart', async (req, res, next) => {
     try {
-        const result = await Cart.getCart(req.query.buyerId);
+        const result = await Cart.getCart(req.query.buyer_id);
         res.json({ result: true, message: "", data: result });
     } catch (error) {
         next(error);
@@ -15,7 +15,9 @@ router.use('/getcart', async (req, res, next) => {
 router.post('/addcart', async (req, res, next) => {
     try {
         const result = await Cart.addCart(req.body);
-        res.json({ result: result._id ? true : false, message: "Add new Vendor ", id: result._id });
+
+        console.log("result", result)
+        res.json({ result: result.insertId ? true : false, message: "Add new Vendor ", id: result.insertId });
     } catch (error) {
         console.log('error', error.message || error)
         next(error);
@@ -27,7 +29,7 @@ router.post('/updatecart/:id', async (req, res, next) => {
     try {
         const result = await Cart.updateCart(req.body, req.params.id);
 
-        res.json({ result: result.acknowledged, message: "cart update success" });
+        res.json({ result: result.affectedRows ? true : false, message: "cart update success" });
     } catch (error) {
         console.log('error', error.message || error)
         next(error);
@@ -39,7 +41,7 @@ router.delete('/deletecart/:id', async (req, res, next) => {
     try {
         const result = await Cart.deleteCart(req.params.id);
 
-        res.json({ result: result.acknowledged, message: "delete cart success" });
+        res.json({ result: result.affectedRows ? true : false, message: "delete cart success" });
 
     } catch (error) {
         next(error);

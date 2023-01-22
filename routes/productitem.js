@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const ProductItem = require('../controllers/productitem.js');
+const ProductItem = require('../controllers/productItem.js');
 
 const multer = require('multer');
 const os = require('os');
@@ -34,8 +34,8 @@ const uploadFile = multer({
 
 router.use('/getproductItem', async (req, res, next) => {
     try {
-        const result = await ProductItem.getproductItem(req.query.productId);
-        res.json({ result: true, message: "", data: result });
+        const result = await ProductItem.getproductItem(req.query);
+        res.json({ result: true, message: "Fetch Product Item", data: result });
     } catch (error) {
         next(error);
     }
@@ -45,23 +45,22 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
     try {
 
         console.log("req------------>", req.files)
-        console.log("productImage1:", req.files['productImage1'])
-        console.log("productImage2:", req.files['productImage2'][0]?.originalname)
-        console.log("productImage3:", req.files['productImage3'][0]?.originalname)
-        console.log("productImage4:", req.files['productImage4'][0]?.originalname)
-        
+        // console.log("productImage1:", req.files['productImage1'])
+        // console.log("productImage2:", req.files['productImage2'][0]?.originalname)
+        // console.log("productImage3:", req.files['productImage3'][0]?.originalname)
+        // console.log("productImage4:", req.files['productImage4'][0]?.originalname)
 
         let productImage1 = '';
         let productImage2 = '';
         let productImage3 = '';
         let productImage4 = '';
 
-        if (req.files['productImage1']) {
+        if (req.files && req.files['productImage1']) {
 
             const extName = path.extname(req.files['productImage1'][0].originalname).toLowerCase();
-            console.log(extName)
+            // console.log(extName)
             let fileName = path.parse(req.files['productImage1'][0].originalname).name;
-            console.log(fileName)
+            // console.log(fileName)
 
             productImage1 = fileName + '_' + (+new Date()) + extName;
             let lPath = `./public/upload/${productImage1}`;
@@ -71,7 +70,7 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
         }
         //product 2
 
-        if (req.files['productImage2']) {
+        if (req.files && req.files['productImage2']) {
 
             const extName = path.extname(req.files['productImage2'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage2'][0].originalname).name;
@@ -85,7 +84,7 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
 
         }
 
-        if (req.files['productImage3']) {
+        if (req.files && req.files['productImage3']) {
 
             const extName = path.extname(req.files['productImage3'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage3'][0].originalname).name;
@@ -99,7 +98,7 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
 
         }
 
-        if (req.files['productImage4']) {
+        if (req.files && req.files['productImage4']) {
 
             const extName = path.extname(req.files['productImage4'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage4'][0].originalname).name;
@@ -113,22 +112,23 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
         }
 
         if (productImage1)
-            req.body.productImage1 =  (productImage1);
+            req.body.productImage1 = (productImage1);
 
         if (productImage2)
-            req.body.productImage2 =  (productImage2);
+            req.body.productImage2 = (productImage2);
 
         if (productImage3)
-            req.body.productImage3 =  (productImage3);
+            req.body.productImage3 = (productImage3);
 
         if (productImage4)
-            req.body.productImage4 =  (productImage4);
+            req.body.productImage4 = (productImage4);
 
- 
+
 
         const result = await ProductItem.addproductItem(req.body);
+        console.log("result", result)
 
-        res.json({ result: result._id ? true : false, message: "Add new Vendor ", id: result._id });
+        res.json({ result: result.insertId ? true : false, message: "Add new Vendor ", id: result.insertId });
 
     } catch (error) {
         console.log("error", error)
@@ -140,20 +140,20 @@ router.post('/addproductItem', uploadFile, async (req, res, next) => {
 router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
     try {
 
-         
+
         console.log("req------------>", req.files)
-        console.log("productImage1:", req.files['productImage1'])
-        console.log("productImage2:", req.files['productImage2'] )
-        console.log("productImage3:", req.files['productImage3'] )
-        console.log("productImage4:", req.files['productImage4'])
-        
+        // console.log("productImage1:", req.files['productImage1'])
+        // console.log("productImage2:", req.files['productImage2'] )
+        // console.log("productImage3:", req.files['productImage3'] )
+        // console.log("productImage4:", req.files['productImage4'])
+
 
         let productImage1 = '';
         let productImage2 = '';
         let productImage3 = '';
         let productImage4 = '';
 
-        if (req.files['productImage1']) {
+        if (req.files && req.files['productImage1']) {
 
             const extName = path.extname(req.files['productImage1'][0].originalname).toLowerCase();
             console.log(extName)
@@ -168,7 +168,7 @@ router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
         }
         //product 2
 
-        if (req.files['productImage2']) {
+        if (req.files && req.files['productImage2']) {
 
             const extName = path.extname(req.files['productImage2'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage2'][0].originalname).name;
@@ -182,7 +182,7 @@ router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
 
         }
 
-        if (req.files['productImage3']) {
+        if (req.files && req.files['productImage3']) {
 
             const extName = path.extname(req.files['productImage3'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage3'][0].originalname).name;
@@ -196,7 +196,7 @@ router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
 
         }
 
-        if (req.files['productImage4']) {
+        if (req.files && req.files['productImage4']) {
 
             const extName = path.extname(req.files['productImage4'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['productImage4'][0].originalname).name;
@@ -210,24 +210,24 @@ router.post('/updateproductItem/:id', uploadFile, async (req, res, next) => {
         }
 
         if (productImage1)
-            req.body.productImage1 =  (productImage1);
+            req.body.productImage1 = (productImage1);
 
         if (productImage2)
-            req.body.productImage2 =  (productImage2);
+            req.body.productImage2 = (productImage2);
 
         if (productImage3)
-            req.body.productImage3 =  (productImage3);
+            req.body.productImage3 = (productImage3);
 
         if (productImage4)
-            req.body.productImage4 =  (productImage4);
+            req.body.productImage4 = (productImage4);
 
- 
+
 
         console.log("req.params.id, req.body", req.params.id, req.body)
         const result = await ProductItem.updateproductItem(req.params.id, req.body);
 
         console.log("result", result)
-        res.json({ result: result.acknowledged, message: "Update Product Item success" });
+        res.json({ result: result.affectedRows ? true : false, message: "Update Product Item success" });
     } catch (error) {
         console.log("error", error)
         next(error);

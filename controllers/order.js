@@ -8,48 +8,11 @@ const Activity = require('../models/activity');
 
 const getOrder = async (buyerId) => {
     // console.log(">>>>>", mongoose.Types.ObjectId(buyerId))
-    const order = await Order.aggregate(
-        [
-            { $match: { buyer_id: buyerId } },
-            // { $match: { buyer_id: mongoose.Types.ObjectId( buyerId) } },
-            // { $addFields: { "product_item_id0": { "$toObjectId": "$product_item_id" } } },
-            {
-                $lookup: {
-                    from: "orderitems",
-                    foreignField: "order_id",
-                    localField: "order_id",
-                    as: "orderItem"
-                }
-            },
-            // {
-            //     $lookup: {
-            //         from: "products",
-            //         foreignField: "_id",
-            //         localField: "orderItem.$.orderItem",
-            //         as: "product"
-            //     }
-            // },
-
-
-            {
-                $lookup: {
-                    from: "orderbillings",
-                    foreignField: "order_id",
-                    localField: "order_id",
-                    as: "orderBilling"
-                }
-            },
-            {
-                $lookup: {
-                    from: "orderbuyers",
-                    foreignField: "order_id",
-                    localField: "order_id",
-                    as: "orderBuyer"
-                }
-            }
-
-        ]
-    );
+    const order = await Order.getOrder(buyerId);
+    // const order = await Order.getOrder(buyerId);
+    // from: "orderitems",
+    // from: "orderbillings",
+    // from: "orderbuyers",
     console.log(">>>>>", order)
 
     return order;
@@ -62,38 +25,9 @@ const addOrder = async (body) => {
         console.log("body-->", body)
         let orderId = +new Date();
 
-        const cart = await Cart.aggregate(
-            [
-                { $match: { buyerId: body.buyerId } },
-                {
-                    $lookup: {
-                        from: "productitems",
-                        foreignField: "_id",
-                        localField: "product_item_id",
-                        as: "orderItem"
-                    }
-                },
-                {
-                    $lookup: {
-                        from: "products",
-                        foreignField: "_id",
-                        localField: "productId",
-                        as: "product"
-                    }
-                }
+        const cart = await Cart.getCart(body.buyerId);
+        // const order = await Order.getOrder(body.buyerId);
 
-            ]
-        );
-
-        /**
-        * [{"_id":"634ab837cdb7dab412d8e43e","productId":"6337cd9bb1834296510a4f46","product_item_id":"634ab0fbf3bddef467e471f8","quantity":"1","buyerId":"634841d4397a19c3ee66264f","shopId":"6337cd9bb1834296510a4f46",
-        * "color":"red","size":"r","create":"2022-10-15T13:40:07.521Z","__v":0,
-        * "orderItem":[{"_id":"634ab0fbf3bddef467e471f8","productId":"6337cd9bb1834296510a4f46","sku":"sku",
-        * "size":["1"],"color":["red"],"stock":["10"],"price":"500","isPriceIncludingDiscount":true,
-        * "isPriceIncludingTax":true,"isDiscount":"false","discount":"0","tax":"0",
-        * "offer":true,"description":"descrive","productImage":[],"__v":0}]}]
-        * 
-        */
 
         let totalPrice = 0;
         let totalTax = 0;
@@ -105,26 +39,27 @@ const addOrder = async (body) => {
         console.log("cart", cart)
 
         const orderItem = [];
-        cart.map(data => {
+        cart.map(async data => {
             console.log("orderItem-->", data)
+            const orderItems = await OrderItem.getOrderItem(data.product_item_id);
 
-            if (data.orderItem.length) {
+            if (orderItems.length) {
                 // console.log("data.orderItem-->", data.orderItem)
 
-                const price = Number(data.orderItem[0].price || 0);
+                const price = Number(orderItems[0].price || 0);
 
-                totalQuantity += Number(data.quantity);
+                totalQuantity += Number(quantitys);
                 totalPrice += price;
-                totalTax += data.orderItem[0].isPriceIncludingTax ? 0 : (price * Number(data.orderItem[0].tax || 0) / 100);
-                totalDiscount += data.orderItem[0].isPriceIncludingDiscount ? 0 : (price * Number(data.orderItem[0].discount || 0) / 100);
-                totalShipping += data.orderItem[0].isPriceIncludingShipping ? 0 : Number(data.orderItem[0].shipping || 0);
+                totalTax += orderItems[0].isPriceIncludingTax ? 0 : (price * Number(orderItems[0].tax || 0) / 100);
+                totalDiscount += orderItems[0].isPriceIncludingDiscount ? 0 : (price * Number(orderItems[0].discount || 0) / 100);
+                totalShipping += orderItems[0].isPriceIncludingShipping ? 0 : Number(orderItems[0].shipping || 0);
 
-                data.orderItem[0].order_id = orderId;
-                data.orderItem[0].productItemId = data.orderItem[0]._id;
-                data.orderItem[0].product = data.product;
+                orderItems[0].order_id = orderId;
+                orderItems[0].productItemId = orderItems[0]._id;
+                orderItems[0].product = products;
 
-                delete data.orderItem[0]._id;
-                orderItem.push(data.orderItem[0]);
+                delete orderItems[0]._id;
+                orderItem.push(orderItems[0]);
             }
 
         });
@@ -155,13 +90,17 @@ const addOrder = async (body) => {
             buyer_id: body.buyer_id
         }
 
-        const order = new Order(orderObj);
-        const result = await order.save();
+        const addOrder = await Order.addOrder(orderObj);
+        // const result = await order.save();
 
         console.log("save order >>>>>>>>>", result._id);
 
         //save Order Item 
-        const roItem = await OrderItem.insertMany(orderItem)
+        let roItem = []
+        for (const i of orderItem) {
+            const r = await OrderItem.addOrderItem(i);
+            roItem.push(r);
+        }
 
 
         // billing
@@ -182,11 +121,11 @@ const addOrder = async (body) => {
             payment_type: null
         }
 
-        const orderBilling = new OrderBilling(billingObj);
-        const bill = await orderBilling.save();
+        const bill = await OrderBilling.addOrderBilling(billingObj);
+        // const bill = await orderBilling.save();
 
         //Address
-        const buyerAddress = await BuyerAddress.find({ _id: body.buyer_address_id });
+        const buyerAddress = await BuyerAddress.getBuyerAddress(body.buyer_address_id);
         console.log("buyerAddress-->", buyerAddress)
 
         let addressObj = {
@@ -205,12 +144,12 @@ const addOrder = async (body) => {
             active: buyerAddress[0].active,
         };
 
-        const orderBuyer = new OrderBuyers(addressObj);
-        const orderBuyerRes = await orderBuyer.save();
+        const orderBuyerRes = new OrderBuyers.addOrderBuyers(addressObj);
+        // const orderBuyerRes = await orderBuyer.save();
 
-        let dCart = await Cart.deleteMany({ buyerId: body.buyerId });
+        let dCart = await Cart.deleteCart(body.buyerId, 0);
 
-        return { result, orderId, orderObj, orderItem, billingObj, orderBuyerRes, dCart };
+        return { result, orderId, addOrder, roItem, bill, orderBuyerRes, dCart };
 
     } catch (error) {
 
@@ -230,7 +169,7 @@ const updateOrderStatus = async (params) => {
     const result = await Order.update({ order_id: params.order_id }, obj);
 
 }
- 
+
 const updateOrder = async (body) => {
     try {
         const params = JSON.parse(JSON.stringify(body));
@@ -242,6 +181,6 @@ const updateOrder = async (body) => {
     } catch (error) {
         throw error;
     }
-} 
+}
 
 module.exports = { getOrder, addOrder, updateOrder, updateOrderStatus }

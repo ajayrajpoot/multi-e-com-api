@@ -1,24 +1,16 @@
 const Vendors_shop = require('../models/vendors_shop')
 
-const getVendorshop = async (parse) => {
-    let query = {};
-    if (parse) {
-        let query = {};
-        if (parse.vendorId)
-            query.vendorId = parse.vendorId;
+const getVendorShops = async (vendor_id) => { 
 
-        return await Vendors_shop.find(query);
-    }
-    else
-        return await Vendors_shop.find();
+        return await Vendors_shop.getVendorShops(vendor_id); 
 }
 
-const addVendorshop = async (body) => {
+const addVendorShops = async (body) => {
     try {
         let p = body;
 
         let params = {
-            vendorId: p.vendorId,
+            vendor_id: p.vendor_id,
             name: p.name,
             title: p.title,
             email: p.email,
@@ -30,11 +22,11 @@ const addVendorshop = async (body) => {
             state: p.state,
             country: p.country,
             zip: p.zip,
-            active: p.active,
+            is_active: p.is_active,
         }
 
-        const vendors_shop = new Vendors_shop(params);
-        const result = await vendors_shop.save();
+        const result = await Vendors_shop.addVendorShops(params);
+        // const result = await vendors_shop.save();
 
         console.log("Result", result)
         return result;
@@ -45,13 +37,13 @@ const addVendorshop = async (body) => {
     }
 }
 
-const updateVendorshop = async (id, body) => {
+const updateVendorShops = async (id, body) => {
     try {
         let p = JSON.parse(JSON.stringify(body));
         // delete params._id;
 
         let params = {
-            vendorId: p.vendorId,
+            vendor_id: p.vendor_id,
             name: p.name,
             title: p.title,
             email: p.email,
@@ -63,10 +55,10 @@ const updateVendorshop = async (id, body) => {
             state: p.state,
             country: p.country,
             zip: p.zip,
-            active: p.active,
+            is_active: p.is_active,
         }
 
-        const result = await Vendors_shop.update({ "_id": id }, params);
+        const result = await Vendors_shop.updateVendorShops(id, params);
 
         console.log("update result", result)
         return result;
@@ -76,4 +68,4 @@ const updateVendorshop = async (id, body) => {
     }
 }
 
-module.exports = { getVendorshop, addVendorshop, updateVendorshop }
+module.exports = { getVendorShops, addVendorShops, updateVendorShops }

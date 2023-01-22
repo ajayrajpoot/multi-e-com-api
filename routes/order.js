@@ -14,7 +14,7 @@ router.use('/getorder', async (req, res, next) => {
 router.post('/placeorder', async (req, res, next) => {
     try {
         const result = await Order.addOrder(req.body);
-        res.json({rr: result,  result: result.result._id ? true : false, message: "Place Order ", id: result.result._id });
+        res.json({ rr: result, result: result.result.insertId ? true : false, message: "Place Order ", id: result.result.insertId });
     } catch (error) {
         next(error);
     }
@@ -23,18 +23,16 @@ router.post('/placeorder', async (req, res, next) => {
 router.post('/updateorderstatus', async (req, res, next) => {
     try {
         const result = await Order.updateOrderStatus(req.body);
-        res.json({rr: result,  result: result.result._id ? true : false, message: "Update Order Status.", id: result.result._id });
+        res.json({ rr: result, result: result.result.insertId ? true : false, message: "Update Order Status.", id: result.result.insertId });
     } catch (error) {
         next(error);
     }
 });
 
-
 router.post('/updateorder', async (req, res, next) => {
     try {
         const result = await Order.updateOrder(req.body);
-
-        res.json({ result: result._id ? true : false, message: "Order update success" });
+        res.json({ result: result.insertId ? true : false, message: "Order update success" });
     } catch (error) {
         next(error);
     }

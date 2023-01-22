@@ -6,8 +6,8 @@ const getOrderItems = async (orderId) => {
 
 const addOrderItems = async (body) => {
     try {
-        const category = new OrderItems(body);
-        const result = await category.save();
+        const result = new OrderItems.addOrderItem(body);
+        // const result = await category.save();
         return result;
     } catch (error) {
         throw error;
@@ -18,7 +18,7 @@ const updateOrderItems = async (body) => {
     try {
         const params = JSON.parse(JSON.stringify(body));
         delete params._id;
-        const result = await OrderItems.update(params, body._id);
+        const result = await OrderItems.updateOrderItem(params, body._id);
 
         console.log("update result", result)
         return result;

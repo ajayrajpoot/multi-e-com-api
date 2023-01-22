@@ -16,7 +16,7 @@ router.post('/addVendor', async (req, res, next) => {
     try {
         console.log("req.body", req.body)
         const result = await vendors.addVendors(req.body);
-        res.json({ result: result._id ? true : false, message: "Add new Vendor ", id: result._id });
+        res.json({ result: result.insertId ? true : false, message: "Add new Vendor ", id: result.insertId });
     } catch (error) {
         next(error);
     }
@@ -29,7 +29,7 @@ router.post('/updateVendor/:id', async (req, res, next) => {
         const result = await vendors.updateVendor(req.params.id, req.body);
 
         console.log("result", result)
-        res.json({ result: result.modifiedCount ? true : false, message: "vendor id update success" });
+        res.json({ result: result.affectedRows ? true : false, message: "vendor id update success" });
     } catch (error) {
         next(error);
     }

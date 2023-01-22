@@ -14,8 +14,10 @@ router.get('/getbuyeraddress', async (req, res, next) => {
 
 router.post('/addbuyeraddress', async (req, res, next) => {
     try {
+        console.log(">>>", req.body)
+
         const result = await buyerAddress.addBuyerAddress(req.body);
-        res.json({ result: result._id ? true : false, message: "Add new Vendor ", id: result._id });
+        res.json({ result: result.insertId ? true : false, message: "Add new Vendor ", id: result.insertId });
     } catch (error) {
         console.log('error', error.message || error)
         next(error);
@@ -25,9 +27,10 @@ router.post('/addbuyeraddress', async (req, res, next) => {
 
 router.post('/updatebuyeraddress/:id', async (req, res, next) => {
     try {
+
         const result = await buyerAddress.updateBuyerAddress(req.body, req.params.id);
 
-        res.json({ result: result.acknowledged, message: "buyer update success" });
+        res.json({ result: result.affectedRows ? true : false, message: "buyer address update success" });
     } catch (error) {
         console.log('error', error.message || error)
         next(error);
@@ -37,8 +40,7 @@ router.post('/updatebuyeraddress/:id', async (req, res, next) => {
 router.delete('/deletebuyeraddress/:id', async (req, res, next) => {
     try {
         const result = await buyerAddress.deleteBuyerAddress(req.params.id);
-
-        res.json({ result: result.acknowledged, message: "buyer update success" });
+        res.json({ result: result.affectedRows ? true : false, message: "delete buyer success" });
     } catch (error) {
         next(error);
     }

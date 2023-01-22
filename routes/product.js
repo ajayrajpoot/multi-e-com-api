@@ -27,12 +27,23 @@ const uploadFile = multer({
     },
 }).fields([{ name: "iconImage", maxCount: 1 }]);
 
+router.use('/productdetail/:id', async (req, res, next) => {
+    try {
+
+        const result = await Product.productDetailById(req.params.id);
+        res.json({ result: true, message: "", data: result });
+        // console.log("result:", result);
+    } catch (error) {
+        console.log("req.error", error);
+        next(error);
+    }
+});
 router.use('/getproduct', async (req, res, next) => {
     try {
         console.log("req.query", req.query);
         console.log("req.query", req.query);
 
-        const result = await Product.getproduct( req.query);
+        const result = await Product.getproduct(req.query);
         res.json({ result: true, message: "", data: result });
         // console.log("result:", result);
     } catch (error) {
@@ -43,9 +54,9 @@ router.use('/getproduct', async (req, res, next) => {
 
 router.post('/addproduct', uploadFile, async (req, res, next) => {
     try {
-        
+
         let ffileName = '';
-        
+
         if (req.files && req.files['iconImage'] && req.files['iconImage'][0]?.originalname) {
 
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
@@ -59,13 +70,15 @@ router.post('/addproduct', uploadFile, async (req, res, next) => {
             let d = fs.writeFileSync(lPath, fileContent);
 
         }
-        
-        if(ffileName)
+
+        if (ffileName)
             req.body.iconImage = ffileName;
 
 
         const result = await Product.addproduct(req.body);
-        res.json({ result: result._id ? true : false, message: "Add new Vendor ", id: result._id });
+
+        console.log("result", result)
+        res.json({ result: result.insertId ? true : false, message: "Add new Vendor ", id: result.insertId });
     } catch (error) {
         next(error);
     }
@@ -74,7 +87,7 @@ router.post('/addproduct', uploadFile, async (req, res, next) => {
 router.post('/updateproduct/:id', uploadFile, async (req, res, next) => {
     try {
         let ffileName = '';
-        
+
         if (req.files && req.files['iconImage'] && req.files['iconImage'][0]?.originalname) {
 
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
@@ -88,14 +101,14 @@ router.post('/updateproduct/:id', uploadFile, async (req, res, next) => {
             let d = fs.writeFileSync(lPath, fileContent);
 
         }
-        
-        if(ffileName)
+
+        if (ffileName)
             req.body.iconImage = ffileName;
 
         const result = await Product.updateproduct(req.body, req.params.id);
 
         console.log("result", result)
-        res.json({ result: result.acknowledged, message: "vendor id update success" });
+        res.json({ result: result.affectedRows ? true : false, message: "vendor id update success" });
         console.log("result:", result);
     } catch (error) {
         console.log("error", error.message || error);
@@ -109,7 +122,7 @@ router.delete('/deleteproduct/:id', async (req, res, next) => {
         const result = await Product.deleteproduct({ id: req.params.id });
 
         console.log("result", result)
-        res.json({ result: result.acknowledged, message: "delete product success" });
+        res.json({ result: result.affectedRows ? true : false, message: "delete product success" });
     } catch (error) {
         next(error);
     }

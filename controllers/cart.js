@@ -1,27 +1,23 @@
 const Cart = require('../models/cart')
 
 const getCart = async (buyerId) => {
-    if (buyerId) {
-        return await Cart.find({ buyerId: buyerId });
-    }
-    else
-        return await Cart.find();
+    return await Cart.getCart(buyerId);
 }
 
 const addCart = async (body) => {
     try {
         let parms = {
-            productId: body.productId,
+            product_id: body.product_id,
             product_item_id: body.product_item_id,
             quantity: body.quantity,
-            buyerId: body.buyerId,
-            buyerAddresssId: body.buyerAddresssId,
-            shopId: body.shopId,
+            buyer_id: body.buyer_id,
+            buyer_address_id: body.buyer_address_id,
+            shop_id: body.shop_id,
             color: body.color,
-            size: body.size, 
+            size: body.size,
         }
-        const cart = new Cart(parms);
-        const result = await cart.save();
+        const result = await Cart.addCart(parms);
+        // const result = await cart.save();
         return result;
     } catch (error) {
         throw error;
@@ -30,18 +26,18 @@ const addCart = async (body) => {
 
 const updateCart = async (body, id) => {
     try {
-        
+
         let parms = {
-            productId: body.productId,
+            product_id: body.product_id,
             product_item_id: body.product_item_id,
             quantity: body.quantity,
-            buyerId: body.buyerId,
-            buyerAddresssId: body.buyerAddresssId,
-            shopId: body.shopId,
+            buyer_id: body.buyer_id,
+            buyer_address_id: body.buyer_address_id,
+            shop_id: body.shop_id,
             color: body.color,
-            size: body.size, 
+            size: body.size,
         }
-        const result = await Cart.update({ _id: id }, parms);
+        const result = await Cart.updateCart(id, parms);
         console.log("update result", result);
         return result;
     } catch (error) {
@@ -50,7 +46,7 @@ const updateCart = async (body, id) => {
 }
 
 
-const deleteCart = async ( id) => {
+const deleteCart = async (id) => {
     try {
         const result = await Cart.deleteOne({ _id: id });
         console.log("delete result", result);

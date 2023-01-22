@@ -1,27 +1,43 @@
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const productSchema = new schema({
-    iconImage: { type: String },
-    shopId: { type: schema.Types.ObjectId, required: true },
-    typeId: { type: schema.Types.ObjectId, required: true },
-    categoryId: { type: schema.Types.ObjectId, required: true },
-    sunCategoryId: { type: schema.Types.ObjectId, required: true },
 
-    title: { type: String },
-    discription: { type: String },
-    bought: { type: String },
+const getProduct = async (filter) => {
+    
+    let condition = ' WHERE 1=1 ';
+    let val = []
+    if (Number(filter.id)) {
+        condition += " and id = ?";
+        val.push(filter.id);
+    }
+    if (Number(filter.type_id)) {
+        condition += " and type_id = ?";
+        val.push(filter.type_id);
+    }
+    if (Number(filter.shop_id)) {
+        condition += " and shop_id = ?";
+        val.push(filter.shop_id);
+    }
+    if (Number(filter.category_id)) {
+        condition += " and category_id = ?";
+        val.push(filter.category_id);
+    }
+    let result = await readDB.query(`SELECT * FROM product  `);
+    return result;
+};
 
-    shipping: { type: String },
-    rating: { type: String },
-    ratingCount: { type: String },
-    buyerGuarantee: { type: String },
-    sponsored: { type: Boolean },
-    likes: { type: String },
-    dislikes: { type: String },
-    active: { type: Boolean },
+const addProduct = async (params) => {
+    const result = await writeDB.query(`INSERT INTO product SET ?   `, params);
+    return result;
+}
 
-    create: { type: Date, required: true, default: Date.now },
-    update: { type: Date }
-});
-module.exports = mongoose.model('product', productSchema);
+const updateProduct = async (id, params) => {
+    const result = await writeDB.query(`UPDATE product SET   ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteProduct = async (id) => {
+    const result = await writeDB.query(`DELETE FROM product WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getProduct, addProduct, updateProduct, deleteProduct }

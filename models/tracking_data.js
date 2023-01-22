@@ -1,13 +1,24 @@
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const activitySchema = new schema({
-    awb: { type: String, required: true },
-    carrier: { type: String },
-    status: { type: String },
-    create_at: { type: Boolean, default: true , required: true, default: Date.now},
-    updtae_at: { type: Boolean, default: true, required: true, default: Date.now}
-});
-module.exports = mongoose.model('activity', activitySchema);
 
- 
+const getTrackingData = async () => {
+    let result = await readDB.query(`SELECT * FROM tracking_data  `);
+    return result;
+};
+
+const addTrackingData = async (params) => {
+    const result = await writeDB.query(`INSERT INTO tracking_data SET ?   `, params);
+    return result;
+}
+
+const updateTrackingData = async (id, params) => {
+    const result = await writeDB.query(`UPDATE tracking_data SET   ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteTrackingData = async (id) => {
+    const result = await writeDB.query(`DELETE FROM tracking_data WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getTrackingData, addTrackingData, updateTrackingData, deleteTrackingData }

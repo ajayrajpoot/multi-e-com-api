@@ -1,20 +1,24 @@
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
-
-const buyerAddressSchema = new schema({
-    buyer_id: { type: schema.Types.ObjectId, required: true },
-    name: { type: String, required: true },
-    address1: { type: String, max: 30, required: true },
-    address2: { type: String, max: 100 },
-    landmark: { type: String, max: 100 },
-    city: { type: String, max: 20, required: true },
-    state: { type: String, max: 20, required: true },
-    country: { type: String, max: 20, required: true },
-    zip: { type: Number, required: true },
-    active: { type: Boolean, required: true },
-    create: { type: Date, required: true, default: Date.now },
-    update: { type: Date }
-});
-module.exports = mongoose.model('buyerAddress', buyerAddressSchema);
 
 
+const getBuyerAddress = async () => {
+    let result = await readDB.query(`SELECT * FROM buyer_address  `);
+    return result;
+};
+
+const addBuyerAddress = async (params) => {
+    const result = await writeDB.query(`INSERT INTO buyer_address SET ?   `, params);
+    return result;
+}
+
+const updateBuyerAddress = async (id, params) => {
+    const result = await writeDB.query(`UPDATE buyer_address SET   ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteBuyerAddress = async (id) => {
+    const result = await writeDB.query(`DELETE FROM buyer_address WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getBuyerAddress, addBuyerAddress, updateBuyerAddress, deleteBuyerAddress }

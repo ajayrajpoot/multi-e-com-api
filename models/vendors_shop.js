@@ -1,21 +1,29 @@
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const shopSchema = new schema({
-    vendorId: { type: schema.Types.ObjectId, required: true },
-    name: { type: String, required: true },
-    title: { type: String },
-    email: { type: String, required: true },
-    phone: { type: String, required: true },
-    password: { type: String, required: true },
-    address1: { type: String, maxLength: 30, required: true },
-    address2: { type: String, maxLength: 100 },
-    city: { type: String, maxLength: 20, required: true },
-    state: { type: String, maxLength: 20, required: true },
-    country: { type: String, maxLength: 20, required: true },
-    zip: { type: Number, minLength: 6, maxLength: 6, required: true },
-    active: { type: Boolean, required: true },
-    create: { type: Date, required: true, default: Date.now },
-    update: { type: Date },
-});
-module.exports = mongoose.model('shop', shopSchema);
+
+const getVendorShops = async (id) => {
+    let condition = '';
+    if (Number(id)) {
+        condition = 'where id = ?'
+    }
+    // console.log(condition, id)
+    let result = await readDB.query(`SELECT * FROM vendor_shops ${condition} `,[id]);
+    return result;
+};
+
+const addVendorShops = async (params) => {
+    const result = await writeDB.query(`INSERT INTO vendor_shops SET ?   `, params);
+    return result;
+}
+
+const updateVendorShops = async (id, params) => {
+    const result = await writeDB.query(`UPDATE vendor_shops SET   ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteVendorShops = async (id) => {
+    const result = await writeDB.query(`DELETE FROM vendor_shops WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getVendorShops, addVendorShops, updateVendorShops, deleteVendorShops }

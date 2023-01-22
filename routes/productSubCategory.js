@@ -1,7 +1,7 @@
 const express = require('express');
 const router = express.Router();
 
-const subCategory = require('../controllers/subcategory');
+const subCategory = require('../controllers/productSubCategory');
 
 
 const multer = require('multer');
@@ -40,8 +40,8 @@ router.use('/getsubcategory', async (req, res, next) => {
 });
 
 router.post('/addsubcategory', uploadFile, async (req, res, next) => {
-    try {
-        if (req.files) {
+    try { 
+            if (req.files && req.files['iconImage'] && req.files['iconImage'][0]?.originalname) {
 
 
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
@@ -55,11 +55,11 @@ router.post('/addsubcategory', uploadFile, async (req, res, next) => {
             // S3ClassObj.s3Upload(s3path, fileContent, contentType);   
             let d = fs.writeFileSync(lPath, fileContent);
 
-            req.body.iconImage = ffileName;
+            req.body.icon_image = ffileName;
         }
         const result = await subCategory.addSubCategory(req.body);
         console.log('result', result)
-        res.json({ result: result._id ? true : false, message: "Add Sub Category ", id: result._id });
+        res.json({ result: result.insertId ? true : false, message: "Add Sub Category ", id: result.insertId });
     } catch (error) {
         console.log('error', error)
         next(error);
@@ -73,7 +73,7 @@ router.post('/updatesubcategory/:id', uploadFile, async (req, res, next) => {
         let ffileName = '';
         try {
 
-            if (req.files['iconImage'][0]?.originalname) {
+            if (req.files && req.files['iconImage']  ) {
                 const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
                 let fileName = path.parse(req.files['iconImage'][0].originalname).name;
 
@@ -89,7 +89,7 @@ router.post('/updatesubcategory/:id', uploadFile, async (req, res, next) => {
             }
 
             if (ffileName) {
-                req.body.iconImage = ffileName;
+                req.body.icon_image = ffileName;
             }
         } catch (error) {
             console.error("error", error.message || error);
@@ -97,7 +97,7 @@ router.post('/updatesubcategory/:id', uploadFile, async (req, res, next) => {
         console.log("req.params.id, req.body", req.params.id, req.body)
         const result = await subCategory.updateSubCategory(req.params.id, req.body);
 
-        res.json({ result: result.modifiedCount ? true : false, message: "subCategory id update success" });
+        res.json({ result: result.affectedRows ? true : false, message: "subCategory id update success" });
     } catch (error) {
         next(error);
     }

@@ -1,19 +1,14 @@
 const Vendors = require('../models/vendors')
 
 const getVendors = async (id) => {
-    if (id) {
-        // return Vendors.find({ _id: id }).select("_id").lean();
-        return await Vendors.find({ _id: id });
-    }
-    else
-        return await Vendors.find();
+    return await Vendors.getVendors(id);
 }
 
 const addVendors = async (body) => {
     try {
         const p = {
             name: body.name,
-            lastName: body.lastName,
+            last_name: body.lastName,
             email: body.email,
             phone: body.phone,
             password: body.password,
@@ -23,10 +18,10 @@ const addVendors = async (body) => {
             state: body.state,
             country: body.country,
             zip: body.zip,
-            active: body.active,
+            is_active: body.is_active ? 1 : 0,
         }
-        const vendors = new Vendors(body);
-        const result = await vendors.save();
+        // const vendors = new Vendors.addVendors(body);
+        const result = await Vendors.addVendors(p);
         console.log("result", result)
         return result;
     } catch (error) {
@@ -40,7 +35,7 @@ const updateVendor = async (id, body) => {
     try {
         const params = {
             name: body.name,
-            lastName: body.lastName,
+            last_name: body.last_name,
             email: body.email,
             phone: body.phone,
             password: body.password,
@@ -50,12 +45,12 @@ const updateVendor = async (id, body) => {
             state: body.state,
             country: body.country,
             zip: body.zip,
-            active: body.active,
+            is_active: body.is_active,
         }
 
         console.log("update resultssss", params)
 
-        const result = await Vendors.update({ "_id": id }, params);
+        const result = await Vendors.updateVendors(id, params);
 
         // console.log("update result", result);
 

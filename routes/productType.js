@@ -1,8 +1,8 @@
 const express = require('express');
 const router = express.Router();
 
-const Type = require('../controllers/type.js');
-const files = require('../module/files');
+const Type = require('../controllers/productType.js');
+const files = require('../module/files.js');
 const multer = require('multer');
 const os = require('os');
 const path = require('path');
@@ -61,8 +61,10 @@ router.post('/addType', uploadFile, async (req, res, next) => {
 
             req.body.iconImage = ffileName;
         } 
-        const result = Type.addType(req.body);
-        res.json({ result:  result.modifiedCount ? true : false, message: "Add new Product Type ", id: result._id });
+        const result = await Type.addType(req.body);
+
+        console.log("result----", result)
+        res.json({ result:  result.insertId ? true : false, message: "Add new Product Type ", id: result.insertId });
         // });
 
     } catch (error) {
@@ -76,7 +78,7 @@ router.post('/addType', uploadFile, async (req, res, next) => {
 router.post('/updatetype/:id' , uploadFile, async (req, res, next) => {
     try {
 
-        if (req.files) {
+        if (req.files && req.files && req.files['iconImage']) {
 
             const extName = path.extname(req.files['iconImage'][0].originalname).toLowerCase();
             let fileName = path.parse(req.files['iconImage'][0].originalname).name;
@@ -94,7 +96,7 @@ router.post('/updatetype/:id' , uploadFile, async (req, res, next) => {
         const result = await Type.updateType(req.params.id ,req.body);
 
         console.log("result", result)
-        res.json({ result:  result.modifiedCount ? true : false, message: " update Product Type success" });
+        res.json({ result:  result.affectedRows ? true : false, message: " update Product Type success" });
     } catch (error) {
         next(error);
     }
