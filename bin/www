@@ -7,7 +7,7 @@
 var app = require('../app');
 var debug = require('debug')('api:server');
 var http = require('http');
-const mongoose = require('mongoose');
+
 require('./bootstrap');
 
 /**
@@ -96,16 +96,16 @@ function onListening() {
 // const uri = "mongodb+srv://jarhain_ecom:Asd@1234@103.175.163.85:27017/jarhain_ecommerce/?compressors=snappy,zlib";
 // const uri = "mongodb+srv://jarhain_ecom:Asd@1234@103.175.163.85:27017/jarhain_ecommerce?retryWrites=true&w=majority";
 // const uri = "mongodb://admin:JDHy35GS%25%24sg%23sb@103.175.163.85:27018?authMechanism=DEFAULT";
-const uri = "mongodb://admin:JDHy35GS%25%24sg%23sb@103.175.163.85:27018/?authMechanism=DEFAULT";
-// 'mongodb://admin:JDHy35GS%25%24sg%23sb@103.175.163.85:27018/jarhain_ecommerce?authMechanism=DEFAULT'
-mongoose
-.connect(uri)
-.then(result => {
+// const uri = "mongodb://admin:JDHy35GS%25%24sg%23sb@103.175.163.85:27018/?authMechanism=DEFAULT";
+
+// mongoose
+// .connect(uri)
+// .then(result => {
   app.listen(8082);
-  // console.log("API Listening  ", result );
+//   // console.log("API Listening  ", result );
   console.log("API Listening at http://localhost:8082" );
-})
-.catch(err => console.log(err));
+// })
+// .catch(err => console.log(err));
 
   
 }

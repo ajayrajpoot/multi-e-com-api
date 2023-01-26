@@ -1,7 +1,7 @@
 
 
-const getCart = async () => {
-    let result = await readDB.query(`SELECT * FROM cart  `);
+const getCart = async (buyer_id) => {
+    let result = await readDB.query(`SELECT * FROM cart Where buyer_id = ? `, [buyer_id]);
     return result;
 };
 

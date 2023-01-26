@@ -1,7 +1,7 @@
 
 
 const getProduct = async (filter) => {
-    
+
     let condition = ' WHERE 1=1 ';
     let val = []
     if (Number(filter.id)) {
@@ -20,7 +20,8 @@ const getProduct = async (filter) => {
         condition += " and category_id = ?";
         val.push(filter.category_id);
     }
-    let result = await readDB.query(`SELECT * FROM product  `);
+
+    let result = await readDB.query(`SELECT * FROM product ${condition}`, val);
     return result;
 };
 

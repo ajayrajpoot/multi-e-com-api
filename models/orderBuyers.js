@@ -1,12 +1,12 @@
 
 
-const getOrderBuyers = async () => {
-    let result = await readDB.query(`SELECT * FROM order_buyers  `);
+const getOrderBuyers = async (orderID) => {
+    let result = await readDB.query(`SELECT * FROM order_buyers WHERE order_id = ? `, [orderID]);
     return result;
 };
 
 const addOrderBuyers = async (params) => {
-    const result = await writeDB.query(`INSERT INTO order_buyers SET ?   `, params);
+    const result = await writeDB.query(`INSERT INTO order_buyers SET ? `, params);
     return result;
 }
 

@@ -46,6 +46,7 @@ app.use(indexRouter.cart);
 app.use(indexRouter.order);
 app.use(indexRouter.orderItem);
 app.use(indexRouter.orderBilling);
+app.use(indexRouter.activityLogs);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

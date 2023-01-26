@@ -1,7 +1,7 @@
 const OrderItems = require('../models/orderItem')
 
-const getOrderItems = async (orderId) => {
-    return await OrderItems.find({ order_id: orderId });
+const getOrderItems = async (params) => {
+    return await OrderItems.getOrderItem(params);
 }
 
 const addOrderItems = async (body) => {

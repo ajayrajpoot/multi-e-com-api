@@ -1,7 +1,7 @@
 
 
-const getBuyerAddress = async () => {
-    let result = await readDB.query(`SELECT * FROM buyer_address  `);
+const getBuyerAddress = async (buyer_id) => {
+    let result = await readDB.query(`SELECT * FROM buyer_address where buyer_id = ? `, [buyer_id]);
     return result;
 };
 

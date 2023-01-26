@@ -5,7 +5,7 @@ const buyerAddress = require('../controllers/buyerAddress');
 
 router.get('/getbuyeraddress', async (req, res, next) => {
     try {
-        const result = await buyerAddress.getBuyerAddress(req.query.buyerId);
+        const result = await buyerAddress.getBuyerAddress(req.query.buyer_id);
         res.json({ result: true, message: "", data: result });
     } catch (error) {
         next(error);

@@ -1,3 +1,4 @@
+const auth = require('./auth');
 const vendor = require('./vendors');
 const vendors_shop = require('./vendors_shop');
 const type = require('./productType');
@@ -12,8 +13,10 @@ const cart = require('./cart');
 const order = require('./order');
 const orderItem = require('./orderItem');
 const orderBilling = require('./orderBilling');
+const activityLogs = require('./activityLogs');
 
 module.exports = {
+    auth,
     vendor,
     vendors_shop,
     type,
@@ -29,6 +32,7 @@ module.exports = {
     orderItem,
     orderBilling,
     buyerAddress,
+    activityLogs,
 
 
 };

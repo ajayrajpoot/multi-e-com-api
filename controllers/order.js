@@ -1,21 +1,51 @@
 const Order = require('../models/order');
 const Cart = require('../models/cart');
+const ProductItem = require('../models/productItem');
 const OrderItem = require('../models/orderItem');
 const OrderBuyers = require('../models/orderBuyers');
 const OrderBilling = require('../models/orderBilling');
 const BuyerAddress = require('../models/buyerAddress');
-const Activity = require('../models/activity');
+const ActivityLogs = require('./activity_logs');
 
-const getOrder = async (buyerId) => {
-    // console.log(">>>>>", mongoose.Types.ObjectId(buyerId))
-    const order = await Order.getOrder(buyerId);
-    // const order = await Order.getOrder(buyerId);
-    // from: "orderitems",
-    // from: "orderbillings",
-    // from: "orderbuyers",
-    console.log(">>>>>", order)
+const getOrder = async (filter, previous = false, next = true, pagesize = 10, page = 1) => {
 
-    return order;
+    try {
+
+        let limit = pagesize;
+        const offset = pagesize * (page - 1);
+
+        const orders = await Order.getOrder(filter, (limit + 1), offset);
+
+        if (orders.length <= pagesize) { next = false; } else { next = true; }
+        if (page == 1) { previous = false; } else { previous = false; }
+
+        return { orders, previous, next, pagesize, page };
+    } catch (error) {
+        console.log("error", error.message || error)
+    }
+
+}
+
+const getOrderDetail = async (orderID) => {
+    try {
+
+        const [order] = await Order.getOrderDetail(orderID);
+        const [orderBilling] = await OrderBilling.getOrderBilling(orderID);
+        const [orderAddres] = await OrderBuyers.getOrderBuyers(orderID);
+        const orderItems = await OrderItem.getOrderItem({ orderID });
+        // const order = await Order.getOrder(buyerId);
+        // from: "orderitems",
+        // from: "orderbillings",
+        // from: "orderbuyers",
+        // console.log(">>>>>", order)
+
+        return { order, orderBilling, orderAddres, orderItems };
+
+    } catch (error) {
+        console.error(error.message || error)
+        throw new Error(error.message || error);
+
+    }
 }
 
 const addOrder = async (body) => {
@@ -23,9 +53,9 @@ const addOrder = async (body) => {
     try {
 
         console.log("body-->", body)
-        let orderId = +new Date();
+        let orderId = 0;
 
-        const cart = await Cart.getCart(body.buyerId);
+        const cart = await Cart.getCart(body.buyer_id);
         // const order = await Order.getOrder(body.buyerId);
 
 
@@ -39,24 +69,25 @@ const addOrder = async (body) => {
         console.log("cart", cart)
 
         const orderItem = [];
-        cart.map(async data => {
+        let orderI = cart.map(async data => {
             console.log("orderItem-->", data)
-            const orderItems = await OrderItem.getOrderItem(data.product_item_id);
+            const orderItems = await ProductItem.getProductItem({ product_item_id: data.product_item_id });
+            console.log("data.orderItem-->", orderItems)
 
             if (orderItems.length) {
-                // console.log("data.orderItem-->", data.orderItem)
 
+                orderItems[0].quantity = data.quantity;
                 const price = Number(orderItems[0].price || 0);
 
-                totalQuantity += Number(quantitys);
+                totalQuantity += Number(data.quantity);
                 totalPrice += price;
                 totalTax += orderItems[0].isPriceIncludingTax ? 0 : (price * Number(orderItems[0].tax || 0) / 100);
                 totalDiscount += orderItems[0].isPriceIncludingDiscount ? 0 : (price * Number(orderItems[0].discount || 0) / 100);
                 totalShipping += orderItems[0].isPriceIncludingShipping ? 0 : Number(orderItems[0].shipping || 0);
 
                 orderItems[0].order_id = orderId;
-                orderItems[0].productItemId = orderItems[0]._id;
-                orderItems[0].product = products;
+                orderItems[0].product_item_id = orderItems[0].id;
+                // orderItems[0].product = products;
 
                 delete orderItems[0]._id;
                 orderItem.push(orderItems[0]);
@@ -64,44 +95,75 @@ const addOrder = async (body) => {
 
         });
 
+        let gg = await Promise.allSettled(orderI)
+
+        console.log("gg >>", gg);
         console.log("final  orderItem", orderItem);
 
         // save order
         let orderObj = {
-            order_id: orderId,
-            billing_id: null,
-            tracking_id: null,
+            // order_id: orderId,
+            // billing_id: null,
+            // tracking_id: null,
 
-            delivery_date: null,
+            // delivery_date: null,
             quantity: totalQuantity,
             total_discount: totalDiscount,
             total_price: totalPrice,
-            total_selling_price: totalShipping,
+            selling_price: totalShipping,
             tax: totalTax,
             final_amount: totalPrice + totalShipping - totalDiscount - totalTax,
             status: 1,
             is_booked: 1,
             is_cancel: 0,
             is_delivered: 0,
-            expected_delivery_date: null,
-            delivered_date: null,
-            cancel_date: null,
-
-            buyer_id: body.buyer_id
+            // expected_delivery_date: null,
+            // delivered_date: null,
+            // cancel_date: null,
+            buyer_id: body.buyer_id,
         }
+        console.log("orderObj", orderObj)
 
         const addOrder = await Order.addOrder(orderObj);
         // const result = await order.save();
-
-        console.log("save order >>>>>>>>>", result._id);
+        orderId = addOrder.insertId;
+        console.log("save order insertId", addOrder.insertId);
 
         //save Order Item 
         let roItem = []
         for (const i of orderItem) {
-            const r = await OrderItem.addOrderItem(i);
-            roItem.push(r);
-        }
+            try {
+                let oi = {
+                    product_id: i.product_id,
+                    sku: i.sku,
+                    size: i.size,
+                    color: i.color,
+                    // stock: i.stock,
+                    price: i.price,
+                    discount: i.discount,
+                    tax: i.tax,
+                    offer: i.offer,
+                    description: i.description,
+                    // image1: i.image1,
+                    // image2: i.image2,
+                    // image3: i.image3,
+                    // image4: i.image4,
+                    // is_active: i.is_active,
+                    quantity: i.quantity,
+                    order_id: orderId,
+                    product_item_id: i.product_item_id,
+                    shop_id: i.shop_id,
 
+                }
+
+                const r = await OrderItem.addOrderItem(oi);
+                console.log("save order Item", r.insertId);
+                // roItem.push(r);
+
+            } catch (error) {
+                console.error("Error", error);
+            }
+        }
 
         // billing
         let billingObj = {
@@ -122,35 +184,42 @@ const addOrder = async (body) => {
         }
 
         const bill = await OrderBilling.addOrderBilling(billingObj);
-        // const bill = await orderBilling.save();
+        console.info("save order Billing", bill.insertId);
 
         //Address
-        const buyerAddress = await BuyerAddress.getBuyerAddress(body.buyer_address_id);
-        console.log("buyerAddress-->", buyerAddress)
+        let buyerAddress;
+        let orderBuyerRes;
+        if (body.address_id) {
 
-        let addressObj = {
+            buyerAddress = await BuyerAddress.getBuyerAddress(body.address_id);
+            console.info("buyerAddress-->", buyerAddress)
 
-            order_id: orderId,
-            buyer_address_id: buyerAddress[0]._id,
-            buyer_id: buyerAddress[0].buyer_id,
-            name: buyerAddress[0].name,
-            address1: buyerAddress[0].address1,
-            address2: buyerAddress[0].address2,
-            landmark: buyerAddress[0].landmark,
-            city: buyerAddress[0].city,
-            state: buyerAddress[0].state,
-            country: buyerAddress[0].country,
-            zip: buyerAddress[0].zip,
-            active: buyerAddress[0].active,
-        };
+            let addressObj = {
 
-        const orderBuyerRes = new OrderBuyers.addOrderBuyers(addressObj);
-        // const orderBuyerRes = await orderBuyer.save();
+                order_id: orderId,
+                address_id: body.address_id,
+                buyer_id: buyerAddress[0].buyer_id,
+                name: buyerAddress[0].name,
+                address1: buyerAddress[0].address1,
+                address2: buyerAddress[0].address2,
+                landmark: buyerAddress[0].landmark,
+                city: buyerAddress[0].city,
+                state: buyerAddress[0].state,
+                country: buyerAddress[0].country,
+                zip: buyerAddress[0].zip,
+                active: buyerAddress[0].active,
+            };
+
+            orderBuyerRes = await OrderBuyers.addOrderBuyers(addressObj);
+            console.log("save order  Buyer Address ID", orderBuyerRes.insertId);
+
+        }
 
         let dCart = await Cart.deleteCart(body.buyerId, 0);
 
-        return { result, orderId, addOrder, roItem, bill, orderBuyerRes, dCart };
-
+        let resposn = { orderID: addOrder.insertId, billingID: bill.insertId, buyreAddressID: orderBuyerRes.insertId };
+        // console.log('resposn: ', resposn)
+        return resposn;
     } catch (error) {
 
         console.log("error", error.message || error);
@@ -159,14 +228,35 @@ const addOrder = async (body) => {
     }
 }
 const updateOrderStatus = async (params) => {
-    let obj = {};
-    if (params.state) {
-        obj.state = params.state;
+    try {
+        // console.log("params", params)
+
+        let obj = {};
+        if (params.status) {
+            obj.status = params.status;
+        }
+        if (params.payment_status) {
+            obj.payment_status = params.payment_status;
+        }
+
+        // if (params.comment) {
+        //     obj.comment = params.comment;
+        // }
+
+        let actiObj = {
+            note: 'state: ' + params.state + ', payment_status: ' + params.payment_status + ', comment: ' + params.comment,
+            // type: '', 
+            // add_by: '',
+            order_id: params.orderID,
+        }
+        await ActivityLogs.addActivityLogs(actiObj);
+        const result = await Order.updateOrder(params.orderID, obj);
+        return result;
+
+    } catch (error) {
+        console.error("Error", error.message || error);
+        throw new Error(error.message || error);
     }
-    if (params.payment_status) {
-        obj.payment_status = params.payment_status;
-    }
-    const result = await Order.update({ order_id: params.order_id }, obj);
 
 }
 
@@ -183,4 +273,4 @@ const updateOrder = async (body) => {
     }
 }
 
-module.exports = { getOrder, addOrder, updateOrder, updateOrderStatus }
+module.exports = { getOrder, getOrderDetail, addOrder, updateOrder, updateOrderStatus }

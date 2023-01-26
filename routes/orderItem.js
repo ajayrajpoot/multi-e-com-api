@@ -4,7 +4,7 @@ const router = express.Router();
 const OrderItems = require('../controllers/orderItems.js');
 router.use('/getorderitems', async (req, res, next) => {
     try {
-        const result = await OrderItems.getOrderItems(req.query.orderId);
+        const result = await OrderItems.getOrderItems(req.query);
         res.json({ result: true, message: "", data: result });
     } catch (error) {
         next(error);

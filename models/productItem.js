@@ -5,11 +5,16 @@ const getProductItem = async (filter) => {
     let condition = ' Where 1=1 ';
     let val = [];
     if (filter.product_id) {
-        condition += ' and product_id = ?';
+        condition += ' and pi.product_id = ?';
         val.push(filter.product_id);
     }
+    if (filter.product_item_id) {
+        condition += ' and pi.id = ?';
+        val.push(filter.product_item_id);
+    }
 
-    let result = await readDB.query(`SELECT * FROM product_item ${condition}`, val);
+    console.log(condition, val)
+    let result = await readDB.query(`SELECT * FROM product_item pi ${condition}`, val);
     return result;
 };
 

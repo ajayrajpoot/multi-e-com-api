@@ -1,7 +1,7 @@
 const Cart = require('../models/cart')
 
-const getCart = async (buyerId) => {
-    return await Cart.getCart(buyerId);
+const getCart = async (buyer_id) => {
+    return await Cart.getCart(buyer_id);
 }
 
 const addCart = async (body) => {
@@ -11,8 +11,8 @@ const addCart = async (body) => {
             product_item_id: body.product_item_id,
             quantity: body.quantity,
             buyer_id: body.buyer_id,
-            buyer_address_id: body.buyer_address_id,
-            shop_id: body.shop_id,
+            address_id: body.address_id,
+            // shop_id: body.shop_id,
             color: body.color,
             size: body.size,
         }
@@ -32,8 +32,8 @@ const updateCart = async (body, id) => {
             product_item_id: body.product_item_id,
             quantity: body.quantity,
             buyer_id: body.buyer_id,
-            buyer_address_id: body.buyer_address_id,
-            shop_id: body.shop_id,
+            address_id: body.address_id,
+            // shop_id: body.shop_id,
             color: body.color,
             size: body.size,
         }

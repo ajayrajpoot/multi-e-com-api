@@ -1,13 +1,29 @@
-const mongoose = require('mongoose');
-const schema = mongoose.Schema;
 
-const ticketMassageSchema = new schema({
-    ticket_id: { type: String },
-    message: { type: Number },
-    created_by: { type: String, required: true },
-    catogory: { type: Number, required: true },
-    client_admin: { type: Boolean, required: true },
-    create: { type: Date, required: true, default: Date.now },
-    update: { type: Date },
-});
-module.exports = mongoose.model('ticketMassage', ticketMassageSchema);
+
+const getTicketmassage = async (id) => {
+    let condition = '';
+    if (Number(id)) {
+        condition = 'where id = ?'
+    }
+    console.log("condition", condition)
+    let result = await readDB.query(`SELECT * FROM ticketmassage ${condition} `, [id]);
+    return result;
+};
+
+const addTicketmassage = async (params) => {
+    const result = await writeDB.query(`INSERT INTO ticketmassage SET ?   `, params);
+    return result;
+}
+
+const updateTicketmassage = async (id, params) => {
+    const result = await writeDB.query(`UPDATE ticketmassage SET   ? where id= ? `, params, id);
+    return result;
+}
+
+const deleteTicketmassage = async (id) => {
+    const result = await writeDB.query(`DELETE FROM ticketmassage WHERE id=? `, id);
+    return result;
+};
+
+
+module.exports = { getTicketmassage, addTicketmassage, updateTicketmassage, deleteTicketmassage }

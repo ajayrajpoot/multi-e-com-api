@@ -1,6 +1,8 @@
 const BuyerAddress = require('../models/buyerAddress')
 
 const getBuyerAddress = async (buyer_id) => {
+    console.log(">>>>", buyer_id)
+
     return await BuyerAddress.getBuyerAddress(buyer_id);
 
 }

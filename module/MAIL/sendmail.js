@@ -33,6 +33,7 @@ class Mail {
         fromEmailID = "Jarha Support <support@jarha.in>"
 
     }
+
     emailHTMLES6 = (to, name, subject, html, data = {}, cc = false) => {
 
         if (to.constructor !== Array)
@@ -86,6 +87,7 @@ class Mail {
                 })
             }))
     }
+
     emailHTML = (to, name, subject, html, data = {}, cc = false) => {
 
         if (to.constructor !== Array)
@@ -187,4 +189,5 @@ class Mail {
             })
         })
     }
+    
 } 

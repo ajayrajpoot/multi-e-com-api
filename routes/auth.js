@@ -2,7 +2,7 @@ var express = require('express');
 var router = express.Router();
 const buyer = require('../controllers/buyer')
 
-const userValidator = require('../validation/users');
+const userValidator = require('../validation/buyer.js');
 
 /* GET users listing. */
 router.get('/', function (req, res, next) {
@@ -13,12 +13,12 @@ router.get('/', function (req, res, next) {
 router.post('/signup', async (req, res, next) => {
   try {
     const body = req.body;
-    await userValidator.user.validate(body);
+    await userValidator.signupValidation.validate(body);
 
     const result = await buyer.signup(body);
 
-    if (result._id) {
-      res.json({ result: true, message: "Signuup success" });
+    if (result.insertId) {
+      res.json({ result: true, message: "Signup success" });
     } else {
       throw new Error("Fail to Success");
     }
