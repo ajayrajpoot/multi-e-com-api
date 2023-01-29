@@ -168,10 +168,7 @@ const loginOTPVerify = async (body) => {
         throw error;
     }
 };
-
-
-
-
+ 
 const verifylink = async (body) => {
 
     try {
