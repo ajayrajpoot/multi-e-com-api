@@ -7,82 +7,33 @@ const parser = require('es6views').parser
 // const EmailLayout = require('../../views/emails/layout.es6')
 
 // https://nodemailer.com/smtp/
+const smtp = require('../../models/smtp');
 
+// smtpTransport;
+// fromEmailID;
 
-const smtpTransport = nodemailer.createTransport(
-    // sesTransport(
-    //     {
-    //     AWSAccessKeyID: process.env.SESKey || _config_.SES.key,
-    //     AWSSecretKey: process.env.SESSecret || _config_.SES.secret,
-    //     rateLimit: 3,
-    //     region: "eu-west-1"
-    // })
-    {
-        host: "smtp.jarha.in",
-        port: 587,
-        secure: false, // true for 465, false for other ports
-        auth: {
-            //   user: testAccount.user, // generated ethereal user
-            //   pass: testAccount.pass, // generated ethereal password
+// constructor(vender) {
 
-            user: "support@jarha.in",
-            pass: "asd@1234",
-        },
-        tls: {
-            rejectUnauthorized: false
-        }
-    }
+//     smtpTransport = nodemailer.createTransport(
+//         {
+//             host: "smtp.jarha.in",
+//             port: 587,
+//             secure: false, // true for 465, false for other ports
+//             auth: {
 
-)
+//                 user: "support@jarha.in",
+//                 pass: "asd@1234",
+//             },
+//             tls: {
+//                 rejectUnauthorized: false
+//             }
+//         }
 
-// nodemailer.createTransport({
-//     host: "smtp.example.com",
-//     port: 587,
-//     secure: false, // upgrade later with STARTTLS
-//     auth: {
-//       user: "username",
-//       pass: "password",
-//     },
-//   });
+//     )
 
-// nodemailer.createTransport({
-//     pool: true,
-//     host: "smtp.example.com",
-//     port: 465,
-//     secure: true, // use TLS
-//     auth: {
-//       user: "username",
-//       pass: "password",
-//     },
-//   });
+//     fromEmailID = "Jarha Support <support@jarha.in>"
 
-// nodemailer.createTransport({
-//     host: "my.smtp.host",
-//     port: 465,
-//     secure: true, // use TLS
-//     auth: {
-//       user: "username",
-//       pass: "pass",
-//     },
-//     tls: {
-//       // do not fail on invalid certs
-//       rejectUnauthorized: false,
-//     },
-//   });
-const fromEmailID = "Jarha Support <support@jarha.in>"
-
-/**
- * Send an email with HTML contents.
- * @class Emailer
- * @param  {String} to      Receiver of the email. Usually our users. You can also pass an array of multiple users in the following format: ["John Doe <john@appleseed.com>", "Jane Doe <jane@appleseed.com>"]
- * @param  {String} name    Name of the receiver. Usually our user's name. Ignored if to is an array.
- * @param  {String} subject Subject of the email.
- * @param  {String} html    The HTML contents. You can optionally pass the path to an instance of EmailLayout too.
- * @param {Object} data    Optional. If you pass an EmailLayout instance in HTML, you can optionally provide data that is to be set to the layout. This can also include attachments which will then be attached to the email.
- * @return {Promise}        Resolves with a promise.
- * 
- */
-
+// }
 
 const emailHTMLES6 = (to, name, subject, html, data = {}, cc = false) => {
 
@@ -138,12 +89,15 @@ const emailHTMLES6 = (to, name, subject, html, data = {}, cc = false) => {
         }))
 }
 
-const emailHTML = (to, name, subject, html, data = {}, cc = false) => {
+const emailHTML = async (to, name, subject, html, data = {}, cc = false) => {
+
+    const p = await getSMTP();
+
+    let smtpTransport = p.smtpTransport;
+    let fromEmailID = p.fromEmailID;
 
     if (to.constructor !== Array)
         to = `${name} <${to}>`
-
-
 
     let mailOptions = {
         // from: subject == "Registration - Jarha" || subject == "Welcome  to Jarha - Your Shop" ? "Jarha Support <support@jarha.in>" : fromEmailID,
@@ -170,17 +124,12 @@ const emailHTML = (to, name, subject, html, data = {}, cc = false) => {
     })
 }
 
-/**
- * Send an email with HTML contents.
- * @class Emailer
- * @param  {String} to      Receiver of the email. Usually our sellers. You can also pass an array of multiple sellers in the following format: ["John Doe <john@appleseed.com>", "Jane Doe <jane@appleseed.com>"]
- * @param  {String} name    Name of the receiver. Usually our seller's name. This must be ignored if "to"(first parameter of the method i.e. reciever) is an array.
- * @param  {String} subject Subject of the email.
- * @param  {String} text    The plain-text contents
- * @param  {Object} data    The data object can only consist of an attachments property which will be attached to the email
- * @return {Promise}        Resolves with a promise.
- */
-const emailText = (to, name, subject, text, data = {}, cc = false) => {
+const emailText = async (to, name, subject, text, data = {}, cc = false) => {
+    console.log("emailText", subject)
+    const p = await getSMTP();
+
+    let smtpTransport = p.smtpTransport;
+    let fromEmailID = p.fromEmailID;
 
     if (to?.constructor !== Array)
         to = `${name} <${to}>`
@@ -192,7 +141,7 @@ const emailText = (to, name, subject, text, data = {}, cc = false) => {
         generateTextFromHTML: true,
         text: text
     }
- 
+
     if (cc) {
         mailOptions.cc = cc;
     }
@@ -249,4 +198,44 @@ const emailTextWithAttachment = (to, from, subject, cc = false, filename, path, 
         })
     })
 }
-module.exports = { emailHTML, emailText, emailTextWithAttachment }
+
+const getSMTP = async () => {
+    try {
+
+        console.log("getSMTP")
+        // smtp.jarha.in	25	info@jarha.in111111	w%XdDka3
+        let smtp_detail = await smtp.getSmtp({ is_primary: 1 });
+
+        smtp_detail = smtp_detail[0];
+
+        let smtpTransport = nodemailer.createTransport(
+            {
+                host: smtp_detail.smtp_server, //"smtp.jarha.in",
+                port: smtp_detail.smtp_port, //587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+
+                    user: smtp_detail.user_name, // "support@jarha.in",
+                    pass: smtp_detail.password,// "asd@1234",
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            }
+
+        )
+
+        // console.log("smtpTransport", smtpTransport)
+
+        let fromEmailID = `${smtp_detail.title} <${smtp_detail.user_name}>`
+
+        return { smtpTransport, fromEmailID }
+
+    } catch (error) {
+        console.log(__line, error.message || error)
+        throw error;
+
+    }
+}
+
+module.exports = { emailHTML, emailText }

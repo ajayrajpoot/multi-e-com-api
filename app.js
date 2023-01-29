@@ -8,6 +8,7 @@ const cors = require('cors');
 
 var indexRouter = require('./routes/index');
 var usersRouter = require('./routes/users');
+var is_auth = require('./middleware/is-auth');
 
 var app = express();
 
@@ -32,6 +33,9 @@ app.get('/', function (req, res, next) {
   next()
 });
 
+app.use(indexRouter.auth);
+
+// app.use(is_auth)
 app.use(indexRouter.vendor);
 app.use(indexRouter.vendors_shop);
 app.use(indexRouter.type);
@@ -47,6 +51,7 @@ app.use(indexRouter.order);
 app.use(indexRouter.orderItem);
 app.use(indexRouter.orderBilling);
 app.use(indexRouter.activityLogs);
+app.use(indexRouter.mail);
 app.use('/users', usersRouter);
 
 // catch 404 and forward to error handler

@@ -7,10 +7,12 @@ const parser = require('es6views').parser
 // const EmailLayout = require('../../views/emails/layout.es6')
 
 // https://nodemailer.com/smtp/
+const smtp = require('../../models/smtp');
 
 class Mail {
     smtpTransport;
     fromEmailID;
+
     constructor(vender) {
 
         smtpTransport = nodemailer.createTransport(
@@ -189,5 +191,30 @@ class Mail {
             })
         })
     }
-    
+
+    async getSMTP() {
+        const smtp = await smtp.getSmtp({ primary: 1 });
+
+        console.log("smtp", smtp);
+
+        smtpTransport = nodemailer.createTransport(
+            {
+                host: "smtp.jarha.in",
+                port: 587,
+                secure: false, // true for 465, false for other ports
+                auth: {
+
+                    user: "support@jarha.in",
+                    pass: "asd@1234",
+                },
+                tls: {
+                    rejectUnauthorized: false
+                }
+            }
+
+        )
+
+        fromEmailID = "Jarha Support <support@jarha.in>"
+    }
+
 } 

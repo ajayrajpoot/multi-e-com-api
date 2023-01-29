@@ -1,19 +1,20 @@
 const Smtp = require('../models/smtp')
 
-const getSmtp = async (shopId) => {
-    return await Smtp.getSmtp(shopId);
+const getSmtp = async (par) => {
+    return await Smtp.getSmtp(par);
 }
 
 const addSmtp = async (body) => {
     try {
 
         let p = {
-            smtpServer: body.smtpServer,
-            smtpPort: body.smtpPort,
-            userName: body.userName,
+            title: body.title,
+            smtp_server: body.smtp_server,
+            smtp_port: body.smtp_port,
+            user_name: body.user_name,
             password: body.password,
-            isSsl: body.isSsl,
-            shopId: body.shopId,
+            is_ssl: body.is_ssl,
+            shop_id: body.shop_id,
             active: body.active,
         }
         console.log("body ", body)
@@ -33,17 +34,15 @@ const updateSmtp = async (body, id) => {
         console.log("update result", body)
 
         const params = {
+            title: body.title,
             active: body.active,
-            isSsl: body.isSsl,
+            is_ssl: body.is_ssl,
             password: body.password,
-            shopId: body.shopId,
-            smtpPort: body.smtpPort,
-            smtpServer: body.smtpServer,
-            userName: body.userName,
+            shop_id: body.shop_id,
+            smtp_port: body.smtp_port,
+            smtp_server: body.smtp_server,
+            user_name: body.user_name,
         }
-
-        // JSON.parse(JSON.stringify(body));
-
         const result = await Smtp.updateSmtp(id, params);
 
         console.log("update result", result)
@@ -53,5 +52,18 @@ const updateSmtp = async (body, id) => {
         throw error;
     }
 }
+const markPrimary = async (body, id) => {
+    try {
+        console.log("update result", body)
 
-module.exports = { getSmtp, addSmtp, updateSmtp }
+        const result = await Smtp.markPrimary(id);
+
+        console.log("update result", result)
+        return result;
+    } catch (error) {
+        console.log("update error", error.message || error)
+        throw error;
+    }
+}
+
+module.exports = { getSmtp, markPrimary, addSmtp, updateSmtp }

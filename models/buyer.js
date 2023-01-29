@@ -1,7 +1,23 @@
 
 
-const getBuyer = async () => {
-    let result = await readDB.query(`SELECT * FROM buyer  `);
+const getBuyer = async (param) => {
+    let condition = 'WHERE 1=1 ';
+    let val = [];
+    if (param.email) {
+        condition += ' and email = ? ';
+        val.push(param.email);
+    }
+    if (param.id) {
+        condition += ' and id = ? ';
+        val.push(param.id);
+
+    }
+    if (param.vcode) {
+        condition += ' and vcode = ? ';
+        val.push(param.vcode);
+    }
+
+    let result = await readDB.query(`SELECT * FROM buyer ${condition} `, val);
     return result;
 };
 

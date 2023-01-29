@@ -1,5 +1,6 @@
 {
-    
+  "API_ROOT_URL": "http://localhost:8082",
+  "VERIFY_LINK": "http://localhost:8082/verifylink?vlink=",
   "STATUS": ["PROCESSING", "BOOKED", "IN TRANSIT", "ONHOLD", "DELIVERED", "CANCELED", "RTO", "FAILED", "REFUNDED"],
   "PAYMENT_SATATUS ": ["PENDING", "PROCESSING", "COMPLEAT", "REFUNDED"]
 }

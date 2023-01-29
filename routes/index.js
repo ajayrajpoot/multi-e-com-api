@@ -14,6 +14,7 @@ const order = require('./order');
 const orderItem = require('./orderItem');
 const orderBilling = require('./orderBilling');
 const activityLogs = require('./activityLogs');
+const mail = require('./mail');
 
 module.exports = {
     auth,
@@ -33,6 +34,7 @@ module.exports = {
     orderBilling,
     buyerAddress,
     activityLogs,
+    mail,
 
 
 };

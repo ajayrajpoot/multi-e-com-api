@@ -16,17 +16,17 @@ const updateCart = async (id, params) => {
 }
 
 const deleteCart = async (buyerId, id) => {
-    let condition = 'WHERE 1=1 ';
-    let val = [];
-    if (buyerId) {
-        condition += ' and buyer_id = ? ';
-        val.push(buyerId);
-    }
-    if (id) {
-        condition += ' and id = ? '
-        val.push(id);
+            let condition = 'WHERE 1=1 ';
+            let val = [];
+            if (buyerId) {
+                condition += ' and buyer_id = ? ';
+                val.push(buyerId);
+            }
+            if (id) {
+                condition += ' and id = ? '
+                val.push(id);
 
-    }
+            }
 
     const result = await writeDB.query(`DELETE FROM cart WHERE ${condition} `, condition);
     return result;
