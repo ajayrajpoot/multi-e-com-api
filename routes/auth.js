@@ -55,9 +55,9 @@ router.get('/verifylink', async (req, res, next) => {
 });
 
 
-router.get('/verifyotp', async (req, res, next) => {
+router.post('/verifyotp', async (req, res, next) => {
   try {
-    const body = req.query;
+    const body = req.body;
     console.log("body-->", body)
 
     if (!body.email || !body.otp)
@@ -83,6 +83,43 @@ router.post('/login', async (req, res, next) => {
   try {
 
     const result = await auth.login(req.body);
+    console.log("result", result)
+
+    if (result) {
+      res.json({ result: true, message: "  success", data: result });
+    } else {
+      throw new Error("Fail to Success");
+    }
+
+  } catch (error) {
+    next(error);
+  }
+});
+
+
+router.post('/loginOTP', async (req, res, next) => {
+
+  try {
+
+    const result = await auth.loginOTP(req.body);
+    console.log("result", result)
+
+    if (result) {
+      res.json({ result: true, message: "  success", data: result });
+    } else {
+      throw new Error("Fail to Success");
+    }
+
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.post('/loginOTPVerify', async (req, res, next) => {
+
+  try {
+
+    const result = await auth.loginOTPVerify(req.body);
     console.log("result", result)
 
     if (result) {

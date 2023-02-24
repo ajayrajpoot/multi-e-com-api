@@ -3,6 +3,29 @@ const ProductItem = require('../models/productItem')
 const getproductItem = async (filter) => {
     return await ProductItem.getProductItem(filter);
 }
+const getProductItemWithProductDetail = async (query) => {
+    console.log("query--->", query)
+    let index = ((query.page - 1) * query.offset) || 0;
+    let offset = query.offset || 15;
+    let next = query.next || false;
+    let previous = query.previous || false;
+    let data = await ProductItem.getProductItemWithProductDetail(index, offset + 1, query);
+
+    if (data.length > offset) {
+        data.pop();
+        this.next = true;
+    } else {
+        this.next = false;
+    }
+
+    let ren = {
+        data:data,
+        next : next, 
+        previous : previous, 
+    }
+
+    return ren;
+}
 
 const addproductItem = async (body) => {
     try {
@@ -79,4 +102,4 @@ const deleteproductItem = async (id) => {
     }
 }
 
-module.exports = { getproductItem, addproductItem, updateproductItem, deleteproductItem }
+module.exports = { getproductItem, getProductItemWithProductDetail, addproductItem, updateproductItem, deleteproductItem }

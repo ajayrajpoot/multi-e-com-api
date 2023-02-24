@@ -32,14 +32,24 @@ const uploadFile = multer({
     { name: "productImage3", maxCount: 1 },
     { name: "productImage4", maxCount: 1 }]);
 
-router.use('/getproductItem', async (req, res, next) => {
-    try {
-        const result = await ProductItem.getproductItem(req.query);
-        res.json({ result: true, message: "Fetch Product Item", data: result });
-    } catch (error) {
-        next(error);
-    }
-});
+    router.use('/getproductItem', async (req, res, next) => {
+        try {
+            const result = await ProductItem.getproductItem(req.query);
+            res.json({ result: true, message: "Fetch Product Item", data: result });
+        } catch (error) {
+            next(error);
+        }
+    });
+    
+    router.use('/getProductItemWithProductDetail', async (req, res, next) => {
+        try {
+            const result = await ProductItem.getProductItemWithProductDetail(req.query);
+            res.json({ result: true, message: "Fetch Product Item", data: result });
+        } catch (error) {
+            console.error("error", error.message || error)
+            next(error);
+        }
+    });
 
 router.post('/addproductItem', uploadFile, async (req, res, next) => {
     try {

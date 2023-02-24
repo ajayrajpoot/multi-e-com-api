@@ -21,22 +21,22 @@ const getProductSubCategory = async (filter) => {
         val.push(filter.category_id);
     }
 
-    let result = await readDB.query(`SELECT * FROM product_sub_category ${condition}  `, val);
+    const [result] = await readDB.query(`SELECT * FROM product_sub_category ${condition}  `, val);
     return result;
 };
 
 const addProductSubCategory = async (params) => {
-    const result = await writeDB.query(`INSERT INTO product_sub_category SET ?   `, params);
+    const [result] = await writeDB.query(`INSERT INTO product_sub_category SET ?   `, params);
     return result;
 }
 
 const updateProductSubCategory = async (id, params) => {
-    const result = await writeDB.query(`UPDATE product_sub_category SET   ? where id= ? `, params, id);
+    const [result] = await writeDB.query(`UPDATE product_sub_category SET   ? where id= ? `, params, id);
     return result;
 }
 
 const deleteProductSubCategory = async (id) => {
-    const result = await writeDB.query(`DELETE FROM product_sub_category WHERE id=? `, id);
+    const [result] = await writeDB.query(`DELETE FROM product_sub_category WHERE id=? `, id);
     return result;
 };
 

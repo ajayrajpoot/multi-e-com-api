@@ -1,4 +1,5 @@
 const Product = require('../models/product')
+const ProductItem = require('../models/productItem')
 
 const getproduct = async (fillter) => {
     // return await Product.find({ _id: productId });
@@ -12,6 +13,7 @@ const getproduct = async (fillter) => {
     if (fillter?.sponsored) { condition.sponsored = true; }
     if (fillter?.category_id) { condition.category_id = fillter.category_id; }
     if (fillter?.sunCategory_id) { condition.sunCategory_id = fillter.sunCategory_id; }
+    if (fillter?.textSearch) { condition.textSearch = fillter.textSearch; }
 
     console.log("condition", condition)
 
@@ -21,28 +23,11 @@ const getproduct = async (fillter) => {
 }
 
 const productDetailById = async (productId) => {
-    // return await Product.find({ _id: productId });
+  
+    let productList = await Product.getProduct({ id: productId });
+    let productItemList = await ProductItem.getProductItem({ product_id: productId });
 
-    console.log("fillter", fillter)
-
-    let condition = {};
-
-    console.log("condition", condition)
-
-    let res = await Product.aggregate([
-        { $match: { _id: productId } },
-
-        {
-            $lookup: {
-                from: "productitems",
-                foreignField: "productId",
-                localField: "_id",
-                as: "orderItem"
-            }
-        },
-    ]);
-    console.log("res", res);
-    return res;
+    return { productList, productItemList };
 }
 
 const addproduct = async (body) => {
@@ -69,6 +54,9 @@ const addproduct = async (body) => {
 
         if (body.icon_image)
             params.icon_image = body.icon_image;
+
+
+        console.log("body", body)
 
         const result = await Product.addProduct(params);
         // const result = await product.save();
@@ -102,7 +90,10 @@ const updateproduct = async (body, id) => {
         if (body.icon_image)
             params.icon_image = body.icon_image;
         // const params = JSON.parse(JSON.stringify(body));
-        const result = await Product.updateProduct( id , params);
+
+        console.log("params----->", params)
+
+        const result = await Product.updateProduct(id, params);
 
         console.log("update result", result)
         return result;

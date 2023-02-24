@@ -17,22 +17,24 @@ const getBuyer = async (param) => {
         val.push(param.vcode);
     }
 
-    let result = await readDB.query(`SELECT * FROM buyer ${condition} `, val);
+    console.log("condition", condition)
+    console.log("condition", param)
+    const [result] = await readDB.query(`SELECT * FROM buyer ${condition} `, val);
     return result;
 };
 
 const addBuyer = async (params) => {
-    const result = await writeDB.query(`INSERT INTO buyer SET ?   `, params);
+    const [result] = await writeDB.query(`INSERT INTO buyer SET ?   `, params);
     return result;
 }
 
 const updateBuyer = async (id, params) => {
-    const result = await writeDB.query(`UPDATE buyer SET   ? where id= ? `, params, id);
+    const [result] = await writeDB.query(`UPDATE buyer SET   ? where id= ? `, params, id);
     return result;
 }
 
 const deleteBuyer = async (id) => {
-    const result = await writeDB.query(`DELETE FROM buyer WHERE id=? `, id);
+    const [result] = await writeDB.query(`DELETE FROM buyer WHERE id=? `, id);
     return result;
 };
 

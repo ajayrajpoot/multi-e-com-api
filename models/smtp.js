@@ -12,28 +12,28 @@ const getSmtp = async (par) => {
         val.push(par.is_primary);
     }
     console.log("condition",condition)
-    let result = await readDB.query(`SELECT * FROM smtp  ${condition} `, val);
+    const [result] = await readDB.query(`SELECT * FROM smtp  ${condition} `, val);
     return result;
 };
 
 const addSmtp = async (params) => {
-    const result = await writeDB.query(`INSERT INTO smtp SET ?   `, params);
+    const [result] = await writeDB.query(`INSERT INTO smtp SET ?   `, params);
     return result;
 }
 
 const updateSmtp = async (id, params) => {
-    const result = await writeDB.query(`UPDATE smtp SET   ? where id= ? `, params, id);
+    const [result] = await writeDB.query(`UPDATE smtp SET   ? where id= ? `, params, id);
     return result;
 }
 const markPrimary = async (id) => {
 
     await writeDB.query(`UPDATE smtp SET ? `, { is_primary: 0 });
-    const result = await writeDB.query(` UPDATE smtp SET   ? where id= ? `, { is_primary: 1 }, id);
+    const [result] = await writeDB.query(` UPDATE smtp SET   ? where id= ? `, { is_primary: 1 }, id);
     return result;
 }
 
 const deleteSmtp = async (id) => {
-    const result = await writeDB.query(`DELETE FROM smtp WHERE id=? `, id);
+    const [result] = await writeDB.query(`DELETE FROM smtp WHERE id=? `, id);
     return result;
 };
 

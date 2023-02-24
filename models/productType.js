@@ -12,22 +12,22 @@ const getProductTypes = async (id, shop_id) => {
         val.push(shop_id);
     }
 
-    let result = await readDB.query(`SELECT * FROM product_types  ${condition}`, [val]);
+    const [result] = await readDB.query(`SELECT * FROM product_types  ${condition}`, [val]);
     return result;
 };
 
 const addProductTypes = async (params) => {
-    const result = await writeDB.query(`INSERT INTO product_types SET ?   `, params);
+    const [result] = await writeDB.query(`INSERT INTO product_types SET ?   `, params);
     return result;
 }
 
 const updateProductTypes = async (id, params) => {
-    const result = await writeDB.query(`UPDATE product_types SET   ? where id= ? `, params, id);
+    const [result] = await writeDB.query(`UPDATE product_types SET   ? where id= ? `, params, id);
     return result;
 }
 
 const deleteProductTypes = async (id) => {
-    const result = await writeDB.query(`DELETE FROM product_types WHERE id=? `, id);
+    const [result] = await writeDB.query(`DELETE FROM product_types WHERE id=? `, id);
     return result;
 };
 

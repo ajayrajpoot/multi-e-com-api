@@ -15,6 +15,7 @@ const signup = async (body) => {
         let user = await Buyer.getBuyer({ email: body.email })
         if (user.length)
             throw ('Email already Exist.');
+
         const hashedPw = body.password;//await bcrypt.hash(body.password, 12)
         // .catch(err => {
         //     throw new Error(err.message || err);
@@ -53,21 +54,21 @@ const login = async (body) => {
     try {
         console.log("loadedUser---->", body);
 
-        const email = body.email;
-        const password = body.password;
+        const email = body.Email;
+        const password = body.Password;
         let loadedUser;
 
         const result = await Buyer.getBuyer({ email: email });
+        console.log("result---->", result);
 
         if (!result.length) {
             throw new Error('A user with this email could not be found.');
         }
 
         loadedUser = result[0];
-        console.log("loadedUser---->", loadedUser.password);
 
         // let isEqual = await bcrypt.compare(password, loadedUser.password);
-        let isEqual = password == loadedUser.password;
+        let isEqual = String(password) == String(loadedUser.password);
         console.log("isEqual---->", isEqual);
 
         if (!isEqual) {
@@ -83,7 +84,8 @@ const login = async (body) => {
             'somesupersecretsecret',
             { expiresIn: '1h' }
         );
-        return { result: true, message: '', token: token, userId: loadedUser.id };
+        delete loadedUser.password;
+        return { result: true, message: '', token: token, buyerId: loadedUser.id, loadedUser:loadedUser };
 
         // })
         // .catch(error => {
@@ -168,7 +170,7 @@ const loginOTPVerify = async (body) => {
         throw error;
     }
 };
- 
+
 const verifylink = async (body) => {
 
     try {
@@ -203,9 +205,9 @@ const verifyotp = async (body) => {
 
         let prm = {
             to: user.eamil,
-            name: p.name,
-            subject: p.subject,
-            html: p.html,
+            name: user.name,
+            subject: 'Valification Mail',
+            html: "Thanks for connect with us",
 
         }
         console.log(__line, prm);
@@ -268,4 +270,4 @@ const changePassword = async (body) => {
 
 }
 
-module.exports = { signup, login, resetPassword, changePassword, verifylink, verifyotp }
+module.exports = { signup, login, loginOTP, loginOTPVerify, resetPassword, changePassword, verifylink, verifyotp }

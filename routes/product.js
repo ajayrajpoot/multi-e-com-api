@@ -27,10 +27,21 @@ const uploadFile = multer({
     },
 }).fields([{ name: "iconImage", maxCount: 1 }]);
 
-router.use('/productdetail/:id', async (req, res, next) => {
+router.get('/productdetail/:id', async (req, res, next) => {
     try {
 
         const result = await Product.productDetailById(req.params.id);
+        res.json({ result: true, message: "", data: result });
+        // console.log("result:", result);
+    } catch (error) {
+        console.log("req.error", error);
+        next(error);
+    }
+});
+router.get('/productDetailById', async (req, res, next) => {
+    try {
+
+        const result = await Product.productDetailById(req.query.productId);
         res.json({ result: true, message: "", data: result });
         // console.log("result:", result);
     } catch (error) {
@@ -72,7 +83,7 @@ router.post('/addproduct', uploadFile, async (req, res, next) => {
         }
 
         if (ffileName)
-            req.body.iconImage = ffileName;
+            req.body.icon_image = ffileName;
 
 
         const result = await Product.addproduct(req.body);
@@ -103,7 +114,7 @@ router.post('/updateproduct/:id', uploadFile, async (req, res, next) => {
         }
 
         if (ffileName)
-            req.body.iconImage = ffileName;
+            req.body.icon_image = ffileName;
 
         const result = await Product.updateproduct(req.body, req.params.id);
 

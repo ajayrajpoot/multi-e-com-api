@@ -13,7 +13,7 @@ console.log(params, limit, offset)
     val.push(params.shopID);
   } 
   console.log(condition, val)
-  let result = await readDB.query(`SELECT o.* FROM orders o join order_item oi on o.id = oi.order_id ${condition} LIMIT ${limit} OFFSET ${offset}  `, val);
+  const [result] = await readDB.query(`SELECT o.* FROM orders o join order_item oi on o.id = oi.order_id ${condition} LIMIT ${limit} OFFSET ${offset}  `, val);
   return result;
 };
 
@@ -25,23 +25,23 @@ const getOrderDetail = async (orderID) => {
     condition += ' AND id = ? ';
     val.push(orderID);
   }
-  let result = await readDB.query(`SELECT * FROM orders ${condition} `, val);
+  const [result] = await readDB.query(`SELECT * FROM orders ${condition} `, val);
   return result;
 };
 
 const addOrder = async (params) => {
-  const result = await writeDB.query('INSERT INTO `orders` SET ? ', params);
+  const [result] = await writeDB.query('INSERT INTO `orders` SET ? ', params);
   return result;
 }
 
 const updateOrder = async (id, params) => {
   console.log("params, id", params, id)
-  const result = await writeDB.query(`UPDATE orders SET ? where id= ? `, params, id);
+  const [result] = await writeDB.query(`UPDATE orders SET ? where id= ? `, params, id);
   return result;
 }
 
 const deleteOrder = async (id) => {
-  const result = await writeDB.query(`DELETE FROM orders WHERE id=? `, id);
+  const [result] = await writeDB.query(`DELETE FROM orders WHERE id=? `, id);
   return result;
 };
 
